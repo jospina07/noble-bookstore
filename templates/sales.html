@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales History</title>
+</head>
+<body>
+    <h1>Sales History</h1>
+
+    <a href="/checkout">Go to Checkout</a>
+    <br><br>
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Sale ID</th>
+            <th>Book ID</th>
+            <th>Title</th>
+            <th>Quantity Sold</th>
+            <th>Total Price</th>
+            <th>Sale Date</th>
+        </tr>
+
+        {% for sale in sales %}
+        <tr>
+            <td>{{ sale.id }}</td>
+            <td>{{ sale.book_id }}</td>
+            <td>{{ sale.title }}</td>
+            <td>{{ sale.quantity_sold }}</td>
+            <td>${{ sale.total_price }}</td>
+            <td>{{ sale.sale_date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <a href="/">Back to Home</a>
+</body>
+</html>

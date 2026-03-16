@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+</head>
+<body>
+    <h1>Book Inventory</h1>
+
+    <a href="/books/add">Add New Book</a>
+    <br><br>
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>ID</th>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Low Stock</th>
+            <th>Update Quantity</th>
+        </tr>
+
+        {% for book in books %}
+        <tr>
+            <td>{{ book.id }}</td>
+            <td>{{ book.isbn }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.price }}</td>
+            <td>{{ book.quantity }}</td>
+            <td>
+                {% if book.quantity < 5 %}
+                    Yes
+                {% else %}
+                    No
+                {% endif %}
+            </td>
+            <td>
+                <form method="POST" action="/books/update/{{ book.id }}">
+                    <input type="number" name="quantity" min="0" required>
+                    <button type="submit">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    <a href="/">Back to Home</a>
+</body>
+</html>

@@ -1,0 +1,30 @@
+from flask import Blueprint, render_template, jsonify
+
+main = Blueprint("main", __name__)
+
+@main.route("/")
+def home():
+    return render_template("index.html")
+
+@main.route("/api/status")
+def status():
+    return jsonify({
+        "status": "running",
+        "project": "team-project"
+    })
+
+@main.route("/api/greeting")
+def greeting():
+    return jsonify({
+        "message": "Hello from the Flask team project API"
+    })
+
+@main.route("/api/team")
+def team():
+    return jsonify({
+        "team_members": [
+            "Member 1",
+            "Member 2",
+            "Member 3"
+        ]
+    })

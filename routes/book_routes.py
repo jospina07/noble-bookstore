@@ -13,27 +13,19 @@ def get_connection():
     return connection
 
 
-# VIEW INVENTORY
 @books_bp.route("/books")
 def list_books():
-
     connection = get_connection()
-
     books = connection.execute(
         "SELECT * FROM books ORDER BY id DESC"
     ).fetchall()
-
     connection.close()
-
     return render_template("inventory.html", books=books)
 
 
-# ADD BOOK
 @books_bp.route("/books/add", methods=["GET", "POST"])
 def add_book():
-
     if request.method == "POST":
-
         isbn = request.form["isbn"]
         title = request.form["title"]
         author = request.form["author"]
@@ -41,12 +33,10 @@ def add_book():
         quantity = request.form["quantity"]
 
         connection = get_connection()
-
         connection.execute(
             "INSERT INTO books (isbn, title, author, price, quantity) VALUES (?, ?, ?, ?, ?)",
             (isbn, title, author, price, quantity)
         )
-
         connection.commit()
         connection.close()
 
@@ -55,33 +45,37 @@ def add_book():
     return render_template("add_book.html")
 
 
-# UPDATE BOOK QUANTITY
 @books_bp.route("/books/update/<int:book_id>", methods=["POST"])
 def update_book_quantity(book_id):
-
     new_quantity = request.form["quantity"]
 
     connection = get_connection()
-
     connection.execute(
         "UPDATE books SET quantity = ? WHERE id = ?",
         (new_quantity, book_id)
     )
-
     connection.commit()
     connection.close()
 
     return redirect(url_for("books.list_books"))
 
 
-# CHECKOUT SYSTEM
+@books_bp.route("/low-stock")
+def low_stock():
+    connection = get_connection()
+    books = connection.execute(
+        "SELECT * FROM books WHERE quantity < 5 ORDER BY quantity ASC"
+    ).fetchall()
+    connection.close()
+
+    return render_template("low_stock.html", books=books)
+
+
 @books_bp.route("/checkout", methods=["GET", "POST"])
 def checkout():
-
     connection = get_connection()
 
     if request.method == "POST":
-
         book_id = request.form["book_id"]
         quantity_sold = int(request.form["quantity_sold"])
 
@@ -105,23 +99,18 @@ def checkout():
         new_quantity = book["quantity"] - quantity_sold
         total_price = float(book["price"]) * quantity_sold
 
-        # AUTO PURCHASE ORDER IF STOCK LOW
         if new_quantity < 5:
-
             reorder_amount = 10
-
             connection.execute(
                 "INSERT INTO purchase_orders (book_id, title, quantity_ordered) VALUES (?, ?, ?)",
                 (book["id"], book["title"], reorder_amount)
             )
 
-        # UPDATE INVENTORY
         connection.execute(
             "UPDATE books SET quantity = ? WHERE id = ?",
             (new_quantity, book_id)
         )
 
-        # RECORD SALE
         connection.execute(
             "INSERT INTO sales (book_id, title, quantity_sold, total_price) VALUES (?, ?, ?, ?)",
             (book["id"], book["title"], quantity_sold, total_price)
@@ -135,46 +124,35 @@ def checkout():
     books = connection.execute(
         "SELECT * FROM books ORDER BY title ASC"
     ).fetchall()
-
     connection.close()
 
     return render_template("checkout.html", books=books)
 
 
-# SALES HISTORY
 @books_bp.route("/sales")
 def sales_history():
-
     connection = get_connection()
-
     sales = connection.execute(
-        "SELECT * FROM sales ORDER BY sale_date DESC, id DESC"
+        "SELECT * FROM sales ORDER BY sale_date DESC"
     ).fetchall()
-
     connection.close()
 
     return render_template("sales.html", sales=sales)
 
 
-# PURCHASE ORDERS PAGE
 @books_bp.route("/purchase-orders")
 def purchase_orders():
-
     connection = get_connection()
-
     orders = connection.execute(
-        "SELECT * FROM purchase_orders ORDER BY order_date DESC, id DESC"
+        "SELECT * FROM purchase_orders ORDER BY order_date DESC"
     ).fetchall()
-
     connection.close()
 
     return render_template("purchase_orders.html", orders=orders)
 
 
-# SALES DASHBOARD
 @books_bp.route("/dashboard")
 def dashboard():
-
     connection = get_connection()
 
     total_sales = connection.execute(
@@ -182,11 +160,11 @@ def dashboard():
     ).fetchone()["count"]
 
     total_books_sold = connection.execute(
-        "SELECT COALESCE(SUM(quantity_sold),0) AS total FROM sales"
+        "SELECT COALESCE(SUM(quantity_sold), 0) AS total FROM sales"
     ).fetchone()["total"]
 
     total_revenue = connection.execute(
-        "SELECT COALESCE(SUM(total_price),0) AS revenue FROM sales"
+        "SELECT COALESCE(SUM(total_price), 0) AS revenue FROM sales"
     ).fetchone()["revenue"]
 
     top_book = connection.execute(
@@ -210,52 +188,23 @@ def dashboard():
     )
 
 
-# API BOOKS
 @books_bp.route("/api/books")
 def api_books():
-
     connection = get_connection()
-
     books = connection.execute(
         "SELECT * FROM books ORDER BY id DESC"
     ).fetchall()
-
     connection.close()
 
-    return jsonify([
-        {
-            "id": book["id"],
-            "isbn": book["isbn"],
-            "title": book["title"],
-            "author": book["author"],
-            "price": book["price"],
-            "quantity": book["quantity"],
-            "low_stock": book["quantity"] < 5
-        }
-        for book in books
-    ])
+    return jsonify([dict(book) for book in books])
 
 
-# API SALES
 @books_bp.route("/api/sales")
 def api_sales():
-
     connection = get_connection()
-
     sales = connection.execute(
         "SELECT * FROM sales ORDER BY sale_date DESC"
     ).fetchall()
-
     connection.close()
 
-    return jsonify([
-        {
-            "id": sale["id"],
-            "book_id": sale["book_id"],
-            "title": sale["title"],
-            "quantity_sold": sale["quantity_sold"],
-            "total_price": sale["total_price"],
-            "sale_date": sale["sale_date"]
-        }
-        for sale in sales
-    ])
+    return jsonify([dict(sale) for sale in sales])

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Low Stock Alert</title>
+</head>
+<body>
+    <h1>Low Stock Alert</h1>
+
+    <a href="/">Back to Home</a>
+    <br><br>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>ID</th>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Status</th>
+        </tr>
+
+        {% for book in books %}
+        <tr>
+            <td>{{ book.id }}</td>
+            <td>{{ book.isbn }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>${{ "%.2f"|format(book.price) }}</td>
+            <td>{{ book.quantity }}</td>
+            <td>LOW STOCK</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% if not books %}
+    <p>All books are currently stocked above the low-stock threshold.</p>
+    {% endif %}
+</body>
+</html>

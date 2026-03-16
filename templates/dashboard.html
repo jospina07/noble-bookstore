@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Dashboard</title>
+</head>
+<body>
+    <h1>Sales Dashboard</h1>
+
+    <a href="/">Back to Home</a>
+    <br><br>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Metric</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Total Sales Transactions</td>
+            <td>{{ total_sales }}</td>
+        </tr>
+        <tr>
+            <td>Total Books Sold</td>
+            <td>{{ total_books_sold }}</td>
+        </tr>
+        <tr>
+            <td>Total Revenue</td>
+            <td>${{ "%.2f"|format(total_revenue) }}</td>
+        </tr>
+        <tr>
+            <td>Top Selling Book</td>
+            <td>
+                {% if top_book %}
+                    {{ top_book.title }} ({{ top_book.total_sold }} sold)
+                {% else %}
+                    No sales yet
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

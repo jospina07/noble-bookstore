@@ -13,18 +13,27 @@ def get_connection():
     return connection
 
 
+# VIEW INVENTORY
 @books_bp.route("/books")
 def list_books():
+
     connection = get_connection()
-    books = connection.execute("SELECT * FROM books ORDER BY id DESC").fetchall()
+
+    books = connection.execute(
+        "SELECT * FROM books ORDER BY id DESC"
+    ).fetchall()
+
     connection.close()
 
     return render_template("inventory.html", books=books)
 
 
+# ADD BOOK
 @books_bp.route("/books/add", methods=["GET", "POST"])
 def add_book():
+
     if request.method == "POST":
+
         isbn = request.form["isbn"]
         title = request.form["title"]
         author = request.form["author"]
@@ -46,6 +55,7 @@ def add_book():
     return render_template("add_book.html")
 
 
+# UPDATE BOOK QUANTITY
 @books_bp.route("/books/update/<int:book_id>", methods=["POST"])
 def update_book_quantity(book_id):
 
@@ -64,6 +74,7 @@ def update_book_quantity(book_id):
     return redirect(url_for("books.list_books"))
 
 
+# CHECKOUT SYSTEM
 @books_bp.route("/checkout", methods=["GET", "POST"])
 def checkout():
 
@@ -104,11 +115,13 @@ def checkout():
                 (book["id"], book["title"], reorder_amount)
             )
 
+        # UPDATE INVENTORY
         connection.execute(
             "UPDATE books SET quantity = ? WHERE id = ?",
             (new_quantity, book_id)
         )
 
+        # RECORD SALE
         connection.execute(
             "INSERT INTO sales (book_id, title, quantity_sold, total_price) VALUES (?, ?, ?, ?)",
             (book["id"], book["title"], quantity_sold, total_price)
@@ -128,6 +141,7 @@ def checkout():
     return render_template("checkout.html", books=books)
 
 
+# SALES HISTORY
 @books_bp.route("/sales")
 def sales_history():
 
@@ -142,6 +156,7 @@ def sales_history():
     return render_template("sales.html", sales=sales)
 
 
+# PURCHASE ORDERS PAGE
 @books_bp.route("/purchase-orders")
 def purchase_orders():
 
@@ -156,6 +171,46 @@ def purchase_orders():
     return render_template("purchase_orders.html", orders=orders)
 
 
+# SALES DASHBOARD
+@books_bp.route("/dashboard")
+def dashboard():
+
+    connection = get_connection()
+
+    total_sales = connection.execute(
+        "SELECT COUNT(*) AS count FROM sales"
+    ).fetchone()["count"]
+
+    total_books_sold = connection.execute(
+        "SELECT COALESCE(SUM(quantity_sold),0) AS total FROM sales"
+    ).fetchone()["total"]
+
+    total_revenue = connection.execute(
+        "SELECT COALESCE(SUM(total_price),0) AS revenue FROM sales"
+    ).fetchone()["revenue"]
+
+    top_book = connection.execute(
+        """
+        SELECT title, SUM(quantity_sold) AS total_sold
+        FROM sales
+        GROUP BY title
+        ORDER BY total_sold DESC
+        LIMIT 1
+        """
+    ).fetchone()
+
+    connection.close()
+
+    return render_template(
+        "dashboard.html",
+        total_sales=total_sales,
+        total_books_sold=total_books_sold,
+        total_revenue=total_revenue,
+        top_book=top_book
+    )
+
+
+# API BOOKS
 @books_bp.route("/api/books")
 def api_books():
 
@@ -181,13 +236,14 @@ def api_books():
     ])
 
 
+# API SALES
 @books_bp.route("/api/sales")
 def api_sales():
 
     connection = get_connection()
 
     sales = connection.execute(
-        "SELECT * FROM sales ORDER BY sale_date DESC, id DESC"
+        "SELECT * FROM sales ORDER BY sale_date DESC"
     ).fetchall()
 
     connection.close()

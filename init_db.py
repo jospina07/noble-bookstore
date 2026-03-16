@@ -32,6 +32,16 @@ CREATE TABLE IF NOT EXISTS sales (
 )
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS purchase_orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    quantity_ordered INTEGER NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
 connection.commit()
 connection.close()
 

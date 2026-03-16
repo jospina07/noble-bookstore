@@ -1,6 +1,6 @@
 import sqlite3
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 import os
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 
 books_bp = Blueprint("books", __name__)
 
@@ -18,6 +18,7 @@ def list_books():
     connection = get_connection()
     books = connection.execute("SELECT * FROM books ORDER BY id DESC").fetchall()
     connection.close()
+
     return render_template("inventory.html", books=books)
 
 
@@ -31,10 +32,12 @@ def add_book():
         quantity = request.form["quantity"]
 
         connection = get_connection()
+
         connection.execute(
             "INSERT INTO books (isbn, title, author, price, quantity) VALUES (?, ?, ?, ?, ?)",
             (isbn, title, author, price, quantity)
         )
+
         connection.commit()
         connection.close()
 
@@ -45,13 +48,16 @@ def add_book():
 
 @books_bp.route("/books/update/<int:book_id>", methods=["POST"])
 def update_book_quantity(book_id):
+
     new_quantity = request.form["quantity"]
 
     connection = get_connection()
+
     connection.execute(
         "UPDATE books SET quantity = ? WHERE id = ?",
         (new_quantity, book_id)
     )
+
     connection.commit()
     connection.close()
 
@@ -60,9 +66,11 @@ def update_book_quantity(book_id):
 
 @books_bp.route("/checkout", methods=["GET", "POST"])
 def checkout():
+
     connection = get_connection()
 
     if request.method == "POST":
+
         book_id = request.form["book_id"]
         quantity_sold = int(request.form["quantity_sold"])
 
@@ -86,6 +94,16 @@ def checkout():
         new_quantity = book["quantity"] - quantity_sold
         total_price = float(book["price"]) * quantity_sold
 
+        # AUTO PURCHASE ORDER IF STOCK LOW
+        if new_quantity < 5:
+
+            reorder_amount = 10
+
+            connection.execute(
+                "INSERT INTO purchase_orders (book_id, title, quantity_ordered) VALUES (?, ?, ?)",
+                (book["id"], book["title"], reorder_amount)
+            )
+
         connection.execute(
             "UPDATE books SET quantity = ? WHERE id = ?",
             (new_quantity, book_id)
@@ -101,25 +119,52 @@ def checkout():
 
         return redirect(url_for("books.sales_history"))
 
-    books = connection.execute("SELECT * FROM books ORDER BY title ASC").fetchall()
+    books = connection.execute(
+        "SELECT * FROM books ORDER BY title ASC"
+    ).fetchall()
+
     connection.close()
+
     return render_template("checkout.html", books=books)
 
 
 @books_bp.route("/sales")
 def sales_history():
+
     connection = get_connection()
+
     sales = connection.execute(
         "SELECT * FROM sales ORDER BY sale_date DESC, id DESC"
     ).fetchall()
+
     connection.close()
+
     return render_template("sales.html", sales=sales)
+
+
+@books_bp.route("/purchase-orders")
+def purchase_orders():
+
+    connection = get_connection()
+
+    orders = connection.execute(
+        "SELECT * FROM purchase_orders ORDER BY order_date DESC, id DESC"
+    ).fetchall()
+
+    connection.close()
+
+    return render_template("purchase_orders.html", orders=orders)
 
 
 @books_bp.route("/api/books")
 def api_books():
+
     connection = get_connection()
-    books = connection.execute("SELECT * FROM books ORDER BY id DESC").fetchall()
+
+    books = connection.execute(
+        "SELECT * FROM books ORDER BY id DESC"
+    ).fetchall()
+
     connection.close()
 
     return jsonify([
@@ -138,10 +183,13 @@ def api_books():
 
 @books_bp.route("/api/sales")
 def api_sales():
+
     connection = get_connection()
+
     sales = connection.execute(
         "SELECT * FROM sales ORDER BY sale_date DESC, id DESC"
     ).fetchall()
+
     connection.close()
 
     return jsonify([

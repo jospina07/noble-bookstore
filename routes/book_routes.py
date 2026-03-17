@@ -15,12 +15,28 @@ def get_connection():
 
 @books_bp.route("/books")
 def list_books():
+
+    search_query = request.args.get("search", "")
+
     connection = get_connection()
-    books = connection.execute(
-        "SELECT * FROM books ORDER BY id DESC"
-    ).fetchall()
+
+    if search_query:
+        books = connection.execute(
+            """
+            SELECT * FROM books
+            WHERE title LIKE ? OR author LIKE ? OR isbn LIKE ?
+            ORDER BY id DESC
+            """,
+            (f"%{search_query}%", f"%{search_query}%", f"%{search_query}%")
+        ).fetchall()
+    else:
+        books = connection.execute(
+            "SELECT * FROM books ORDER BY id DESC"
+        ).fetchall()
+
     connection.close()
-    return render_template("inventory.html", books=books)
+
+    return render_template("inventory.html", books=books, search_query=search_query)
 
 
 @books_bp.route("/books/add", methods=["GET", "POST"])
@@ -217,9 +233,7 @@ def dashboard():
 @books_bp.route("/api/books")
 def api_books():
     connection = get_connection()
-    books = connection.execute(
-        "SELECT * FROM books ORDER BY id DESC"
-    ).fetchall()
+    books = connection.execute("SELECT * FROM books").fetchall()
     connection.close()
 
     return jsonify([dict(book) for book in books])
@@ -228,9 +242,7 @@ def api_books():
 @books_bp.route("/api/sales")
 def api_sales():
     connection = get_connection()
-    sales = connection.execute(
-        "SELECT * FROM sales ORDER BY sale_date DESC"
-    ).fetchall()
+    sales = connection.execute("SELECT * FROM sales").fetchall()
     connection.close()
 
     return jsonify([dict(sale) for sale in sales])

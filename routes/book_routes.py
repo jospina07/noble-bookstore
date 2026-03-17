@@ -15,7 +15,6 @@ def get_connection():
 
 @books_bp.route("/books")
 def list_books():
-
     search_query = request.args.get("search", "")
 
     connection = get_connection()
@@ -59,6 +58,43 @@ def add_book():
         return redirect(url_for("books.list_books"))
 
     return render_template("add_book.html")
+
+
+@books_bp.route("/books/edit/<int:book_id>", methods=["GET", "POST"])
+def edit_book(book_id):
+    connection = get_connection()
+
+    if request.method == "POST":
+        isbn = request.form["isbn"]
+        title = request.form["title"]
+        author = request.form["author"]
+        price = request.form["price"]
+        quantity = request.form["quantity"]
+
+        connection.execute(
+            """
+            UPDATE books
+            SET isbn = ?, title = ?, author = ?, price = ?, quantity = ?
+            WHERE id = ?
+            """,
+            (isbn, title, author, price, quantity, book_id)
+        )
+        connection.commit()
+        connection.close()
+
+        return redirect(url_for("books.list_books"))
+
+    book = connection.execute(
+        "SELECT * FROM books WHERE id = ?",
+        (book_id,)
+    ).fetchone()
+
+    connection.close()
+
+    if book is None:
+        return "Book not found."
+
+    return render_template("edit_book.html", book=book)
 
 
 @books_bp.route("/books/update/<int:book_id>", methods=["POST"])

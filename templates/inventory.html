@@ -26,6 +26,7 @@
         <th>Author</th>
         <th>Price</th>
         <th>Quantity</th>
+        <th>Edit</th>
         <th>Update Quantity</th>
     </tr>
 
@@ -37,6 +38,9 @@
         <td>{{ book.author }}</td>
         <td>${{ "%.2f"|format(book.price) }}</td>
         <td>{{ book.quantity }}</td>
+        <td>
+            <a href="/books/edit/{{ book.id }}">Edit</a>
+        </td>
         <td>
             <form method="POST" action="/books/update/{{ book.id }}">
                 <input type="number" name="quantity" required>

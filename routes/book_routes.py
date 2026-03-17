@@ -177,14 +177,40 @@ def dashboard():
         """
     ).fetchone()
 
+    sales_by_title = connection.execute(
+        """
+        SELECT title, SUM(quantity_sold) AS total_sold
+        FROM sales
+        GROUP BY title
+        ORDER BY total_sold DESC
+        """
+    ).fetchall()
+
     connection.close()
+
+    max_sold = 0
+    if sales_by_title:
+        max_sold = max(row["total_sold"] for row in sales_by_title)
+
+    chart_data = []
+    for row in sales_by_title:
+        width_percent = 0
+        if max_sold > 0:
+            width_percent = int((row["total_sold"] / max_sold) * 100)
+
+        chart_data.append({
+            "title": row["title"],
+            "total_sold": row["total_sold"],
+            "width_percent": width_percent
+        })
 
     return render_template(
         "dashboard.html",
         total_sales=total_sales,
         total_books_sold=total_books_sold,
         total_revenue=total_revenue,
-        top_book=top_book
+        top_book=top_book,
+        chart_data=chart_data
     )
 
 

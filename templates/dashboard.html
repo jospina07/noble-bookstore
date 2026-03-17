@@ -4,6 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .chart-section {
+            margin-top: 30px;
+            max-width: 900px;
+        }
+
+        .chart-row {
+            margin-bottom: 16px;
+        }
+
+        .chart-label {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .chart-bar-wrap {
+            width: 100%;
+            border: 1px solid black;
+            height: 28px;
+        }
+
+        .chart-bar {
+            height: 100%;
+            background-color: #888;
+            color: white;
+            line-height: 28px;
+            padding-left: 8px;
+            box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
     <h1>Sales Dashboard</h1>
@@ -11,7 +59,7 @@
     <a href="/">Back to Home</a>
     <br><br>
 
-    <table border="1" cellpadding="10">
+    <table>
         <tr>
             <th>Metric</th>
             <th>Value</th>
@@ -39,5 +87,24 @@
             </td>
         </tr>
     </table>
+
+    <div class="chart-section">
+        <h2>Books Sold Chart</h2>
+
+        {% if chart_data %}
+            {% for item in chart_data %}
+                <div class="chart-row">
+                    <div class="chart-label">{{ item.title }} — {{ item.total_sold }} sold</div>
+                    <div class="chart-bar-wrap">
+                        <div class="chart-bar" style="width: {{ item.width_percent }}%;">
+                            {{ item.width_percent }}%
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No sales data available yet.</p>
+        {% endif %}
+    </div>
 </body>
 </html>

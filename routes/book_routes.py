@@ -97,6 +97,21 @@ def edit_book(book_id):
     return render_template("edit_book.html", book=book)
 
 
+@books_bp.route("/books/delete/<int:book_id>", methods=["POST"])
+def delete_book(book_id):
+    connection = get_connection()
+
+    connection.execute(
+        "DELETE FROM books WHERE id = ?",
+        (book_id,)
+    )
+
+    connection.commit()
+    connection.close()
+
+    return redirect(url_for("books.list_books"))
+
+
 @books_bp.route("/books/update/<int:book_id>", methods=["POST"])
 def update_book_quantity(book_id):
     new_quantity = request.form["quantity"]

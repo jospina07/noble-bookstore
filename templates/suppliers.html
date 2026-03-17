@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suppliers</title>
+</head>
+<body>
+    <h1>Suppliers</h1>
+
+    <a href="/">Back to Home</a> |
+    <a href="/suppliers/add">Add Supplier</a>
+
+    <br><br>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>ID</th>
+            <th>Supplier Name</th>
+            <th>Contact Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+        </tr>
+
+        {% for supplier in suppliers %}
+        <tr>
+            <td>{{ supplier.id }}</td>
+            <td>{{ supplier.name }}</td>
+            <td>{{ supplier.contact_name }}</td>
+            <td>{{ supplier.email }}</td>
+            <td>{{ supplier.phone }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% if not suppliers %}
+    <p>No suppliers have been added yet.</p>
+    {% endif %}
+</body>
+</html>

@@ -281,6 +281,38 @@ def dashboard():
     )
 
 
+@books_bp.route("/suppliers")
+def suppliers():
+    connection = get_connection()
+    suppliers_list = connection.execute(
+        "SELECT * FROM suppliers ORDER BY id DESC"
+    ).fetchall()
+    connection.close()
+
+    return render_template("suppliers.html", suppliers=suppliers_list)
+
+
+@books_bp.route("/suppliers/add", methods=["GET", "POST"])
+def add_supplier():
+    if request.method == "POST":
+        name = request.form["name"]
+        contact_name = request.form["contact_name"]
+        email = request.form["email"]
+        phone = request.form["phone"]
+
+        connection = get_connection()
+        connection.execute(
+            "INSERT INTO suppliers (name, contact_name, email, phone) VALUES (?, ?, ?, ?)",
+            (name, contact_name, email, phone)
+        )
+        connection.commit()
+        connection.close()
+
+        return redirect(url_for("books.suppliers"))
+
+    return render_template("add_supplier.html")
+
+
 @books_bp.route("/api/books")
 def api_books():
     connection = get_connection()

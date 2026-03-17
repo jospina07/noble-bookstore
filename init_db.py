@@ -42,6 +42,16 @@ CREATE TABLE IF NOT EXISTS purchase_orders (
 )
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS suppliers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    contact_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT NOT NULL
+)
+""")
+
 connection.commit()
 connection.close()
 

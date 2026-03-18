@@ -3,6 +3,8 @@ from routes.main_routes import main
 from routes.book_routes import books_bp
 
 app = Flask(__name__)
+app.secret_key = "new_noble_bookstore_secret_key"
+
 app.register_blueprint(main)
 app.register_blueprint(books_bp)
 

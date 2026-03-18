@@ -2,17 +2,30 @@ import sqlite3
 import os
 import csv
 import io
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify, Response
+from functools import wraps
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, Response, session
 
 books_bp = Blueprint("books", __name__)
 
 DB_PATH = os.path.join("database", "app.db")
+
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "password123"
 
 
 def get_connection():
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     return connection
+
+
+def login_required(route_function):
+    @wraps(route_function)
+    def wrapped_route(*args, **kwargs):
+        if not session.get("logged_in"):
+            return redirect(url_for("books.login"))
+        return route_function(*args, **kwargs)
+    return wrapped_route
 
 
 def generate_barcode_pattern(isbn):
@@ -29,7 +42,32 @@ def generate_barcode_pattern(isbn):
     return pattern.strip()
 
 
+@books_bp.route("/login", methods=["GET", "POST"])
+def login():
+    error = ""
+
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            session["logged_in"] = True
+            session["username"] = username
+            return redirect(url_for("books.list_books"))
+        else:
+            error = "Invalid username or password."
+
+    return render_template("login.html", error=error)
+
+
+@books_bp.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("books.login"))
+
+
 @books_bp.route("/books")
+@login_required
 def list_books():
     search_query = request.args.get("search", "")
 
@@ -51,10 +89,11 @@ def list_books():
 
     connection.close()
 
-    return render_template("inventory.html", books=books, search_query=search_query)
+    return render_template("inventory.html", books=books, search_query=search_query, username=session.get("username"))
 
 
 @books_bp.route("/books/add", methods=["GET", "POST"])
+@login_required
 def add_book():
     if request.method == "POST":
         isbn = request.form["isbn"]
@@ -77,6 +116,7 @@ def add_book():
 
 
 @books_bp.route("/books/edit/<int:book_id>", methods=["GET", "POST"])
+@login_required
 def edit_book(book_id):
     connection = get_connection()
 
@@ -114,6 +154,7 @@ def edit_book(book_id):
 
 
 @books_bp.route("/books/delete/<int:book_id>", methods=["POST"])
+@login_required
 def delete_book(book_id):
     connection = get_connection()
 
@@ -129,6 +170,7 @@ def delete_book(book_id):
 
 
 @books_bp.route("/books/update/<int:book_id>", methods=["POST"])
+@login_required
 def update_book_quantity(book_id):
     new_quantity = request.form["quantity"]
 
@@ -144,6 +186,7 @@ def update_book_quantity(book_id):
 
 
 @books_bp.route("/books/label/<int:book_id>")
+@login_required
 def book_label(book_id):
     connection = get_connection()
 
@@ -167,6 +210,7 @@ def book_label(book_id):
 
 
 @books_bp.route("/export/inventory")
+@login_required
 def export_inventory():
     connection = get_connection()
     books = connection.execute(
@@ -207,6 +251,7 @@ def export_inventory():
 
 
 @books_bp.route("/low-stock")
+@login_required
 def low_stock():
     connection = get_connection()
     books = connection.execute(
@@ -218,6 +263,7 @@ def low_stock():
 
 
 @books_bp.route("/checkout", methods=["GET", "POST"])
+@login_required
 def checkout():
     connection = get_connection()
 
@@ -286,6 +332,7 @@ def checkout():
 
 
 @books_bp.route("/sales")
+@login_required
 def sales_history():
     connection = get_connection()
     sales = connection.execute(
@@ -297,6 +344,7 @@ def sales_history():
 
 
 @books_bp.route("/export/sales")
+@login_required
 def export_sales():
     connection = get_connection()
     sales = connection.execute(
@@ -337,6 +385,7 @@ def export_sales():
 
 
 @books_bp.route("/purchase-orders")
+@login_required
 def purchase_orders():
     connection = get_connection()
 
@@ -362,6 +411,7 @@ def purchase_orders():
 
 
 @books_bp.route("/export/purchase-orders")
+@login_required
 def export_purchase_orders():
     connection = get_connection()
 
@@ -415,6 +465,7 @@ def export_purchase_orders():
 
 
 @books_bp.route("/dashboard")
+@login_required
 def dashboard():
     connection = get_connection()
 
@@ -478,6 +529,7 @@ def dashboard():
 
 
 @books_bp.route("/suppliers")
+@login_required
 def suppliers():
     connection = get_connection()
     suppliers_list = connection.execute(
@@ -489,6 +541,7 @@ def suppliers():
 
 
 @books_bp.route("/suppliers/add", methods=["GET", "POST"])
+@login_required
 def add_supplier():
     if request.method == "POST":
         name = request.form["name"]
@@ -510,6 +563,7 @@ def add_supplier():
 
 
 @books_bp.route("/api/books")
+@login_required
 def api_books():
     connection = get_connection()
     books = connection.execute("SELECT * FROM books").fetchall()
@@ -519,6 +573,7 @@ def api_books():
 
 
 @books_bp.route("/api/sales")
+@login_required
 def api_sales():
     connection = get_connection()
     sales = connection.execute("SELECT * FROM sales").fetchall()

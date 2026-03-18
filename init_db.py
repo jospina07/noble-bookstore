@@ -52,6 +52,13 @@ CREATE TABLE IF NOT EXISTS suppliers (
 )
 """)
 
+# SAFELY ADD supplier_id COLUMN TO EXISTING purchase_orders TABLE IF IT DOES NOT EXIST
+cursor.execute("PRAGMA table_info(purchase_orders)")
+columns = [column[1] for column in cursor.fetchall()]
+
+if "supplier_id" not in columns:
+    cursor.execute("ALTER TABLE purchase_orders ADD COLUMN supplier_id INTEGER")
+
 connection.commit()
 connection.close()
 

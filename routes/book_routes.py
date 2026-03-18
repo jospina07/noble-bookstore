@@ -168,9 +168,19 @@ def checkout():
 
         if new_quantity < 5:
             reorder_amount = 10
+
+            first_supplier = connection.execute(
+                "SELECT id FROM suppliers ORDER BY id ASC LIMIT 1"
+            ).fetchone()
+
+            supplier_id = first_supplier["id"] if first_supplier else None
+
             connection.execute(
-                "INSERT INTO purchase_orders (book_id, title, quantity_ordered) VALUES (?, ?, ?)",
-                (book["id"], book["title"], reorder_amount)
+                """
+                INSERT INTO purchase_orders (book_id, title, quantity_ordered, supplier_id)
+                VALUES (?, ?, ?, ?)
+                """,
+                (book["id"], book["title"], reorder_amount, supplier_id)
             )
 
         connection.execute(
@@ -210,9 +220,23 @@ def sales_history():
 @books_bp.route("/purchase-orders")
 def purchase_orders():
     connection = get_connection()
+
     orders = connection.execute(
-        "SELECT * FROM purchase_orders ORDER BY order_date DESC"
+        """
+        SELECT
+            purchase_orders.id,
+            purchase_orders.book_id,
+            purchase_orders.title,
+            purchase_orders.quantity_ordered,
+            purchase_orders.order_date,
+            purchase_orders.supplier_id,
+            suppliers.name AS supplier_name
+        FROM purchase_orders
+        LEFT JOIN suppliers ON purchase_orders.supplier_id = suppliers.id
+        ORDER BY purchase_orders.order_date DESC
+        """
     ).fetchall()
+
     connection.close()
 
     return render_template("purchase_orders.html", orders=orders)

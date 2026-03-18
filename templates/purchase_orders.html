@@ -17,6 +17,7 @@
             <th>Book ID</th>
             <th>Title</th>
             <th>Quantity Ordered</th>
+            <th>Supplier</th>
             <th>Order Date</th>
         </tr>
 
@@ -26,6 +27,13 @@
             <td>{{ order.book_id }}</td>
             <td>{{ order.title }}</td>
             <td>{{ order.quantity_ordered }}</td>
+            <td>
+                {% if order.supplier_name %}
+                    {{ order.supplier_name }}
+                {% else %}
+                    Unassigned
+                {% endif %}
+            </td>
             <td>{{ order.order_date }}</td>
         </tr>
         {% endfor %}

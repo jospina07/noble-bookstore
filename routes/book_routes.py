@@ -129,6 +129,46 @@ def update_book_quantity(book_id):
     return redirect(url_for("books.list_books"))
 
 
+@books_bp.route("/export/inventory")
+def export_inventory():
+    connection = get_connection()
+    books = connection.execute(
+        "SELECT * FROM books ORDER BY id DESC"
+    ).fetchall()
+    connection.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Book ID",
+        "ISBN",
+        "Title",
+        "Author",
+        "Price",
+        "Quantity"
+    ])
+
+    for book in books:
+        writer.writerow([
+            book["id"],
+            book["isbn"],
+            book["title"],
+            book["author"],
+            book["price"],
+            book["quantity"]
+        ])
+
+    csv_data = output.getvalue()
+    output.close()
+
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=inventory_report.csv"}
+    )
+
+
 @books_bp.route("/low-stock")
 def low_stock():
     connection = get_connection()

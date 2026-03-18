@@ -7,7 +7,8 @@
 
 <h1>Inventory</h1>
 
-<a href="/">Back to Home</a>
+<a href="/">Back to Home</a> |
+<a href="/export/inventory">Export Inventory (CSV)</a>
 
 <br><br>
 
@@ -43,7 +44,7 @@
             <a href="/books/edit/{{ book.id }}">Edit</a>
         </td>
         <td>
-            <form method="POST" action="/books/delete/{{ book.id }}" onsubmit="return confirm('Are you sure you want to delete this book?');">
+            <form method="POST" action="/books/delete/{{ book.id }}" onsubmit="return confirm('Are you sure?');">
                 <button type="submit">Delete</button>
             </form>
         </td>

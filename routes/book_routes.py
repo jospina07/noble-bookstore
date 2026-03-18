@@ -1,6 +1,8 @@
 import sqlite3
 import os
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
+import csv
+import io
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, Response
 
 books_bp = Blueprint("books", __name__)
 
@@ -215,6 +217,46 @@ def sales_history():
     connection.close()
 
     return render_template("sales.html", sales=sales)
+
+
+@books_bp.route("/export/sales")
+def export_sales():
+    connection = get_connection()
+    sales = connection.execute(
+        "SELECT * FROM sales ORDER BY sale_date DESC"
+    ).fetchall()
+    connection.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Sale ID",
+        "Book ID",
+        "Title",
+        "Quantity Sold",
+        "Total Price",
+        "Sale Date"
+    ])
+
+    for sale in sales:
+        writer.writerow([
+            sale["id"],
+            sale["book_id"],
+            sale["title"],
+            sale["quantity_sold"],
+            sale["total_price"],
+            sale["sale_date"]
+        ])
+
+    csv_data = output.getvalue()
+    output.close()
+
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=sales_report.csv"}
+    )
 
 
 @books_bp.route("/purchase-orders")

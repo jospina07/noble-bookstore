@@ -8,7 +8,10 @@
 <body>
     <h1>Sales History</h1>
 
-    <a href="/checkout">Go to Checkout</a>
+    <a href="/">Back to Home</a> |
+    <a href="/checkout">Go to Checkout</a> |
+    <a href="/export/sales">Export Sales Report (CSV)</a>
+
     <br><br>
 
     <table border="1" cellpadding="8">
@@ -27,13 +30,14 @@
             <td>{{ sale.book_id }}</td>
             <td>{{ sale.title }}</td>
             <td>{{ sale.quantity_sold }}</td>
-            <td>${{ sale.total_price }}</td>
+            <td>${{ "%.2f"|format(sale.total_price) }}</td>
             <td>{{ sale.sale_date }}</td>
         </tr>
         {% endfor %}
     </table>
 
-    <br>
-    <a href="/">Back to Home</a>
+    {% if not sales %}
+    <p>No sales have been recorded yet.</p>
+    {% endif %}
 </body>
 </html>

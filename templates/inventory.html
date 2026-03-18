@@ -27,6 +27,7 @@
         <th>Author</th>
         <th>Price</th>
         <th>Quantity</th>
+        <th>Label</th>
         <th>Edit</th>
         <th>Delete</th>
         <th>Update Quantity</th>
@@ -40,6 +41,9 @@
         <td>{{ book.author }}</td>
         <td>${{ "%.2f"|format(book.price) }}</td>
         <td>{{ book.quantity }}</td>
+        <td>
+            <a href="/books/label/{{ book.id }}">Print Label</a>
+        </td>
         <td>
             <a href="/books/edit/{{ book.id }}">Edit</a>
         </td>

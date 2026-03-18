@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Label</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        .label-box {
+            width: 420px;
+            border: 2px solid black;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .book-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .book-author {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .book-price {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .book-isbn {
+            margin-bottom: 12px;
+        }
+
+        .barcode {
+            font-family: "Courier New", monospace;
+            font-size: 18px;
+            letter-spacing: 1px;
+            white-space: pre-wrap;
+            line-height: 1.2;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .isbn-text {
+            font-size: 14px;
+            text-align: center;
+        }
+
+        @media print {
+            button, a {
+                display: none;
+            }
+
+            body {
+                margin: 0;
+            }
+
+            .label-box {
+                border: 2px solid black;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/books">Back to Inventory</a>
+    <br><br>
+
+    <button onclick="window.print()">Print Label</button>
+
+    <br><br>
+
+    <div class="label-box">
+        <div class="book-title">{{ book.title }}</div>
+        <div class="book-author">By {{ book.author }}</div>
+        <div class="book-price">${{ "%.2f"|format(book.price) }}</div>
+        <div class="book-isbn">ISBN: {{ book.isbn }}</div>
+
+        <div class="barcode">{{ barcode_pattern }}</div>
+        <div class="isbn-text">{{ book.isbn }}</div>
+    </div>
+</body>
+</html>

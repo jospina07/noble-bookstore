@@ -15,6 +15,20 @@ def get_connection():
     return connection
 
 
+def generate_barcode_pattern(isbn):
+    cleaned = "".join(ch for ch in str(isbn) if ch.isdigit())
+
+    if not cleaned:
+        cleaned = "000000000000"
+
+    pattern = ""
+    for digit in cleaned:
+        number = int(digit)
+        pattern += "|" * (number + 1) + " "
+
+    return pattern.strip()
+
+
 @books_bp.route("/books")
 def list_books():
     search_query = request.args.get("search", "")
@@ -127,6 +141,29 @@ def update_book_quantity(book_id):
     connection.close()
 
     return redirect(url_for("books.list_books"))
+
+
+@books_bp.route("/books/label/<int:book_id>")
+def book_label(book_id):
+    connection = get_connection()
+
+    book = connection.execute(
+        "SELECT * FROM books WHERE id = ?",
+        (book_id,)
+    ).fetchone()
+
+    connection.close()
+
+    if book is None:
+        return "Book not found."
+
+    barcode_pattern = generate_barcode_pattern(book["isbn"])
+
+    return render_template(
+        "book_label.html",
+        book=book,
+        barcode_pattern=barcode_pattern
+    )
 
 
 @books_bp.route("/export/inventory")

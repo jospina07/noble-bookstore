@@ -8,7 +8,9 @@
 <body>
     <h1>Purchase Orders</h1>
 
-    <a href="/">Back to Home</a>
+    <a href="/">Back to Home</a> |
+    <a href="/export/purchase-orders">Export Purchase Orders (CSV)</a>
+
     <br><br>
 
     <table border="1" cellpadding="8">
@@ -38,5 +40,9 @@
         </tr>
         {% endfor %}
     </table>
+
+    {% if not orders %}
+    <p>No purchase orders have been created yet.</p>
+    {% endif %}
 </body>
 </html>

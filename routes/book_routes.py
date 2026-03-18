@@ -324,6 +324,59 @@ def purchase_orders():
     return render_template("purchase_orders.html", orders=orders)
 
 
+@books_bp.route("/export/purchase-orders")
+def export_purchase_orders():
+    connection = get_connection()
+
+    orders = connection.execute(
+        """
+        SELECT
+            purchase_orders.id,
+            purchase_orders.book_id,
+            purchase_orders.title,
+            purchase_orders.quantity_ordered,
+            purchase_orders.order_date,
+            suppliers.name AS supplier_name
+        FROM purchase_orders
+        LEFT JOIN suppliers ON purchase_orders.supplier_id = suppliers.id
+        ORDER BY purchase_orders.order_date DESC
+        """
+    ).fetchall()
+
+    connection.close()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Order ID",
+        "Book ID",
+        "Title",
+        "Quantity Ordered",
+        "Supplier",
+        "Order Date"
+    ])
+
+    for order in orders:
+        writer.writerow([
+            order["id"],
+            order["book_id"],
+            order["title"],
+            order["quantity_ordered"],
+            order["supplier_name"] if order["supplier_name"] else "Unassigned",
+            order["order_date"]
+        ])
+
+    csv_data = output.getvalue()
+    output.close()
+
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=purchase_orders_report.csv"}
+    )
+
+
 @books_bp.route("/dashboard")
 def dashboard():
     connection = get_connection()

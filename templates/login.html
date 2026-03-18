@@ -4,29 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>New Noble Bookstore Login</h1>
+    <div class="center-box">
+        <h1>New Noble Bookstore Login</h1>
+        <p class="muted">Use the admin account to access the bookstore management system.</p>
 
-    <p>Use the admin account to access the bookstore management system.</p>
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+        <form method="POST" class="form-section">
+            <label>Username:</label><br>
+            <input type="text" name="username" required>
 
-    <form method="POST">
-        <label>Username:</label><br>
-        <input type="text" name="username" required><br><br>
+            <label>Password:</label><br>
+            <input type="password" name="password" required>
 
-        <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
+            <button type="submit">Login</button>
+        </form>
 
-        <button type="submit">Login</button>
-    </form>
+        <hr>
 
-    <br>
-    <p><strong>Demo credentials:</strong></p>
-    <p>Username: admin</p>
-    <p>Password: password123</p>
+        <p><strong>Demo credentials:</strong></p>
+        <p class="small-text">Username: admin</p>
+        <p class="small-text">Password: password123</p>
+    </div>
 </body>
 </html>

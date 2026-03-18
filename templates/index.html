@@ -4,26 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The New Noble Bookstore</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>The New Noble Bookstore Management System</h1>
-    <p>Flask bookstore project is running.</p>
+    <div class="page-container">
+        <div class="top-bar">
+            <div>
+                <h1>The New Noble Bookstore Management System</h1>
+                <p class="muted">Manage inventory, sales, suppliers, purchase orders, reporting, and barcode labels.</p>
+            </div>
+            <div class="nav-links">
+                <a href="/login">Login</a>
+                <a href="/logout" class="secondary-link">Logout</a>
+            </div>
+        </div>
 
-    <ul>
-        <li><a href="/login">Login</a></li>
-        <li><a href="/logout">Logout</a></li>
-        <li><a href="/books">View Inventory</a></li>
-        <li><a href="/books/add">Add Book</a></li>
-        <li><a href="/low-stock">Low Stock Alert</a></li>
-        <li><a href="/checkout">Customer Checkout</a></li>
-        <li><a href="/sales">Sales History</a></li>
-        <li><a href="/purchase-orders">Purchase Orders</a></li>
-        <li><a href="/dashboard">Sales Dashboard</a></li>
-        <li><a href="/suppliers">Suppliers</a></li>
-        <li><a href="/suppliers/add">Add Supplier</a></li>
-        <li><a href="/api/status">API Status</a></li>
-        <li><a href="/api/books">Books API</a></li>
-        <li><a href="/api/sales">Sales API</a></li>
-    </ul>
+        <div class="card-grid">
+            <div class="card">
+                <h3>Inventory</h3>
+                <p class="muted">Manage books, edit records, update stock, print labels, and export inventory.</p>
+                <a class="action-link" href="/books">View Inventory</a>
+                <a class="action-link" href="/books/add">Add Book</a>
+            </div>
+
+            <div class="card">
+                <h3>Sales</h3>
+                <p class="muted">Process checkout, review sales history, and export sales data.</p>
+                <a class="action-link" href="/checkout">Customer Checkout</a>
+                <a class="action-link" href="/sales">Sales History</a>
+            </div>
+
+            <div class="card">
+                <h3>Purchase Orders</h3>
+                <p class="muted">Monitor restocking activity and supplier-connected purchase orders.</p>
+                <a class="action-link" href="/purchase-orders">Purchase Orders</a>
+                <a class="action-link" href="/low-stock">Low Stock Alert</a>
+            </div>
+
+            <div class="card">
+                <h3>Suppliers</h3>
+                <p class="muted">Add and manage supplier contact information.</p>
+                <a class="action-link" href="/suppliers">Suppliers</a>
+                <a class="action-link" href="/suppliers/add">Add Supplier</a>
+            </div>
+
+            <div class="card">
+                <h3>Analytics</h3>
+                <p class="muted">Review dashboard metrics and visual sales charts.</p>
+                <a class="action-link" href="/dashboard">Sales Dashboard</a>
+            </div>
+
+            <div class="card">
+                <h3>API</h3>
+                <p class="muted">Access system data through API routes.</p>
+                <a class="action-link" href="/api/status">API Status</a>
+                <a class="action-link" href="/api/books">Books API</a>
+                <a class="action-link" href="/api/sales">Sales API</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

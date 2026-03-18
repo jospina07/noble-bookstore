@@ -1,0 +1,217 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+
+.page-container {
+    max-width: 1100px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+h1, h2 {
+    margin-top: 0;
+    color: #1f3b57;
+}
+
+p {
+    line-height: 1.5;
+}
+
+.nav-links,
+.quick-links {
+    margin-bottom: 20px;
+}
+
+.nav-links a,
+.quick-links a,
+.action-link {
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: white;
+    background: #2f6fad;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.nav-links a:hover,
+.quick-links a:hover,
+.action-link:hover {
+    background: #245785;
+}
+
+.secondary-link {
+    background: #6c757d;
+}
+
+.secondary-link:hover {
+    background: #545b62;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    background: white;
+}
+
+th,
+td {
+    border: 1px solid #d9dee3;
+    padding: 10px;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background-color: #eaf1f8;
+    color: #1f3b57;
+}
+
+form.inline-form {
+    display: inline-block;
+    margin: 0;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="email"],
+select {
+    width: 100%;
+    max-width: 350px;
+    padding: 10px;
+    border: 1px solid #c8d0d8;
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    background: white;
+}
+
+button {
+    background: #2f6fad;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background: #245785;
+}
+
+button.delete-btn {
+    background: #b44343;
+}
+
+button.delete-btn:hover {
+    background: #923636;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.card {
+    background: #f9fbfd;
+    border: 1px solid #dce5ee;
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #1f3b57;
+}
+
+.muted {
+    color: #666;
+    font-size: 14px;
+}
+
+.error-message {
+    color: #b44343;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.form-section {
+    max-width: 500px;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-form input[type="text"] {
+    margin-bottom: 0;
+    min-width: 260px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #eaf1f8;
+    color: #1f3b57;
+    font-size: 13px;
+}
+
+.center-box {
+    max-width: 450px;
+    margin: 60px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.small-text {
+    font-size: 13px;
+    color: #666;
+}
+
+pre.barcode-block {
+    background: #fff;
+    border: 1px solid #d9dee3;
+    padding: 14px;
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        margin: 15px;
+        padding: 20px;
+    }
+
+    th,
+    td {
+        font-size: 14px;
+    }
+}

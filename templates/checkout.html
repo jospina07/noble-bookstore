@@ -4,29 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Customer Checkout</h1>
+    <div class="page-container">
+        <div class="top-bar">
+            <div>
+                <h1>Customer Checkout</h1>
+                <p class="muted">Select a book and quantity to process a customer purchase.</p>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/sales">Sales History</a>
+                <a href="/logout" class="secondary-link">Logout</a>
+            </div>
+        </div>
 
-    <form method="POST">
-        <label>Select Book:</label><br>
-        <select name="book_id" required>
-            {% for book in books %}
-            <option value="{{ book.id }}">
-                {{ book.title }} by {{ book.author }} (Stock: {{ book.quantity }}, Price: ${{ book.price }})
-            </option>
-            {% endfor %}
-        </select>
-        <br><br>
+        <div class="form-section">
+            <form method="POST">
+                <label>Select Book:</label><br>
+                <select name="book_id" required>
+                    {% for book in books %}
+                    <option value="{{ book.id }}">
+                        {{ book.title }} by {{ book.author }} (Stock: {{ book.quantity }}, Price: ${{ "%.2f"|format(book.price) }})
+                    </option>
+                    {% endfor %}
+                </select>
 
-        <label>Quantity to Purchase:</label><br>
-        <input type="number" name="quantity_sold" min="1" required>
-        <br><br>
+                <label>Quantity to Purchase:</label><br>
+                <input type="number" name="quantity_sold" min="1" required>
 
-        <button type="submit">Complete Purchase</button>
-    </form>
-
-    <br>
-    <a href="/">Back to Home</a>
+                <button type="submit">Complete Purchase</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

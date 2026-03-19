@@ -4,30 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Book</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Edit Book</h1>
+    <div class="page-container">
+        <div class="top-bar">
+            <div>
+                <h1>Edit Book</h1>
+                <p class="muted">Update the book details below and save your changes.</p>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/books">Inventory</a>
+                <a href="/logout" class="secondary-link">Logout</a>
+            </div>
+        </div>
 
-    <a href="/books">Back to Inventory</a>
-    <br><br>
+        <div class="form-section">
+            <form method="POST">
+                <label>ISBN:</label><br>
+                <input type="text" name="isbn" value="{{ book.isbn }}" required>
 
-    <form method="POST">
-        <label>ISBN:</label><br>
-        <input type="text" name="isbn" value="{{ book.isbn }}" required><br><br>
+                <label>Title:</label><br>
+                <input type="text" name="title" value="{{ book.title }}" required>
 
-        <label>Title:</label><br>
-        <input type="text" name="title" value="{{ book.title }}" required><br><br>
+                <label>Author:</label><br>
+                <input type="text" name="author" value="{{ book.author }}" required>
 
-        <label>Author:</label><br>
-        <input type="text" name="author" value="{{ book.author }}" required><br><br>
+                <label>Price:</label><br>
+                <input type="number" step="0.01" name="price" value="{{ book.price }}" required>
 
-        <label>Price:</label><br>
-        <input type="number" step="0.01" name="price" value="{{ book.price }}" required><br><br>
+                <label>Quantity:</label><br>
+                <input type="number" name="quantity" value="{{ book.quantity }}" required>
 
-        <label>Quantity:</label><br>
-        <input type="number" name="quantity" value="{{ book.quantity }}" required><br><br>
-
-        <button type="submit">Save Changes</button>
-    </form>
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

@@ -4,39 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Low Stock Alert</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Low Stock Alert</h1>
+    <div class="page-container">
+        <div class="top-bar">
+            <div>
+                <h1>Low Stock Alert</h1>
+                <p class="muted">Books listed here are below the low-stock threshold.</p>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/purchase-orders">Purchase Orders</a>
+                <a href="/logout" class="secondary-link">Logout</a>
+            </div>
+        </div>
 
-    <a href="/">Back to Home</a>
-    <br><br>
+        {% if books %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>ISBN</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Status</th>
+            </tr>
 
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>ID</th>
-            <th>ISBN</th>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Status</th>
-        </tr>
-
-        {% for book in books %}
-        <tr>
-            <td>{{ book.id }}</td>
-            <td>{{ book.isbn }}</td>
-            <td>{{ book.title }}</td>
-            <td>{{ book.author }}</td>
-            <td>${{ "%.2f"|format(book.price) }}</td>
-            <td>{{ book.quantity }}</td>
-            <td>LOW STOCK</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    {% if not books %}
-    <p>All books are currently stocked above the low-stock threshold.</p>
-    {% endif %}
+            {% for book in books %}
+            <tr>
+                <td>{{ book.id }}</td>
+                <td>{{ book.isbn }}</td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>${{ "%.2f"|format(book.price) }}</td>
+                <td>{{ book.quantity }}</td>
+                <td><span class="badge">LOW STOCK</span></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="card">
+            <h3>Good News</h3>
+            <p class="muted">All books are currently stocked above the low-stock threshold.</p>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>

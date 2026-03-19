@@ -4,23 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-        }
-
-        table {
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-
-        th, td {
-            border: 1px solid black;
-            padding: 10px;
-            text-align: left;
-        }
-
         .chart-section {
             margin-top: 30px;
             max-width: 900px;
@@ -37,13 +22,16 @@
 
         .chart-bar-wrap {
             width: 100%;
-            border: 1px solid black;
+            border: 1px solid #d9dee3;
             height: 28px;
+            background: #f4f6f8;
+            border-radius: 6px;
+            overflow: hidden;
         }
 
         .chart-bar {
             height: 100%;
-            background-color: #888;
+            background-color: #2f6fad;
             color: white;
             line-height: 28px;
             padding-left: 8px;
@@ -51,60 +39,96 @@
             white-space: nowrap;
             overflow: hidden;
         }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: #f9fbfd;
+            border: 1px solid #dce5ee;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .metric-card h3 {
+            margin: 0 0 8px 0;
+            color: #1f3b57;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <h1>Sales Dashboard</h1>
+    <div class="page-container">
+        <div class="top-bar">
+            <div>
+                <h1>Sales Dashboard</h1>
+                <p class="muted">Review performance metrics and visualize top-selling books.</p>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/sales">Sales History</a>
+                <a href="/logout" class="secondary-link">Logout</a>
+            </div>
+        </div>
 
-    <a href="/">Back to Home</a>
-    <br><br>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <h3>Total Sales Transactions</h3>
+                <div class="metric-value">{{ total_sales }}</div>
+            </div>
 
-    <table>
-        <tr>
-            <th>Metric</th>
-            <th>Value</th>
-        </tr>
-        <tr>
-            <td>Total Sales Transactions</td>
-            <td>{{ total_sales }}</td>
-        </tr>
-        <tr>
-            <td>Total Books Sold</td>
-            <td>{{ total_books_sold }}</td>
-        </tr>
-        <tr>
-            <td>Total Revenue</td>
-            <td>${{ "%.2f"|format(total_revenue) }}</td>
-        </tr>
-        <tr>
-            <td>Top Selling Book</td>
-            <td>
-                {% if top_book %}
-                    {{ top_book.title }} ({{ top_book.total_sold }} sold)
-                {% else %}
-                    No sales yet
-                {% endif %}
-            </td>
-        </tr>
-    </table>
+            <div class="metric-card">
+                <h3>Total Books Sold</h3>
+                <div class="metric-value">{{ total_books_sold }}</div>
+            </div>
 
-    <div class="chart-section">
-        <h2>Books Sold Chart</h2>
+            <div class="metric-card">
+                <h3>Total Revenue</h3>
+                <div class="metric-value">${{ "%.2f"|format(total_revenue) }}</div>
+            </div>
 
-        {% if chart_data %}
-            {% for item in chart_data %}
-                <div class="chart-row">
-                    <div class="chart-label">{{ item.title }} — {{ item.total_sold }} sold</div>
-                    <div class="chart-bar-wrap">
-                        <div class="chart-bar" style="width: {{ item.width_percent }}%;">
-                            {{ item.width_percent }}%
+            <div class="metric-card">
+                <h3>Top Selling Book</h3>
+                <div class="metric-value" style="font-size: 18px;">
+                    {% if top_book %}
+                        {{ top_book.title }} ({{ top_book.total_sold }} sold)
+                    {% else %}
+                        No sales yet
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2>Books Sold Chart</h2>
+
+            {% if chart_data %}
+                {% for item in chart_data %}
+                    <div class="chart-row">
+                        <div class="chart-label">{{ item.title }} — {{ item.total_sold }} sold</div>
+                        <div class="chart-bar-wrap">
+                            <div class="chart-bar" style="width: {{ item.width_percent }}%;">
+                                {{ item.width_percent }}%
+                            </div>
                         </div>
                     </div>
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <h3>No Sales Data</h3>
+                    <p class="muted">Sales chart data will appear here after sales are recorded.</p>
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No sales data available yet.</p>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>

@@ -4,37 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suppliers</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Suppliers</h1>
+    <div class="page-container">
+        <div class="top-bar">
+            <div>
+                <h1>Suppliers</h1>
+                <p class="muted">Manage supplier records and contact information.</p>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/suppliers/add">Add Supplier</a>
+                <a href="/logout" class="secondary-link">Logout</a>
+            </div>
+        </div>
 
-    <a href="/">Back to Home</a> |
-    <a href="/suppliers/add">Add Supplier</a>
+        {% if suppliers %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Supplier Name</th>
+                <th>Contact Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+            </tr>
 
-    <br><br>
-
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>ID</th>
-            <th>Supplier Name</th>
-            <th>Contact Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-        </tr>
-
-        {% for supplier in suppliers %}
-        <tr>
-            <td>{{ supplier.id }}</td>
-            <td>{{ supplier.name }}</td>
-            <td>{{ supplier.contact_name }}</td>
-            <td>{{ supplier.email }}</td>
-            <td>{{ supplier.phone }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    {% if not suppliers %}
-    <p>No suppliers have been added yet.</p>
-    {% endif %}
+            {% for supplier in suppliers %}
+            <tr>
+                <td>{{ supplier.id }}</td>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.contact_name }}</td>
+                <td>{{ supplier.email }}</td>
+                <td>{{ supplier.phone }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="card">
+            <h3>No Suppliers Added</h3>
+            <p class="muted">Supplier records will appear here after you add them.</p>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>

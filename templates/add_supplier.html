@@ -4,27 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Supplier</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Add Supplier</h1>
+    <div class="page-container">
+        <div class="top-bar">
+            <div>
+                <h1>Add Supplier</h1>
+                <p class="muted">Enter supplier and contact details below.</p>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/suppliers">Suppliers</a>
+                <a href="/logout" class="secondary-link">Logout</a>
+            </div>
+        </div>
 
-    <a href="/suppliers">Back to Suppliers</a>
-    <br><br>
+        <div class="form-section">
+            <form method="POST">
+                <label>Supplier Name:</label><br>
+                <input type="text" name="name" required>
 
-    <form method="POST">
-        <label>Supplier Name:</label><br>
-        <input type="text" name="name" required><br><br>
+                <label>Contact Name:</label><br>
+                <input type="text" name="contact_name" required>
 
-        <label>Contact Name:</label><br>
-        <input type="text" name="contact_name" required><br><br>
+                <label>Email:</label><br>
+                <input type="email" name="email" required>
 
-        <label>Email:</label><br>
-        <input type="email" name="email" required><br><br>
+                <label>Phone:</label><br>
+                <input type="text" name="phone" required>
 
-        <label>Phone:</label><br>
-        <input type="text" name="phone" required><br><br>
-
-        <button type="submit">Add Supplier</button>
-    </form>
+                <button type="submit">Add Supplier</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

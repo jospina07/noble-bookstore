@@ -4,45 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Orders</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Purchase Orders</h1>
+    <div class="page-container">
+        <div class="top-bar">
+            <div>
+                <h1>Purchase Orders</h1>
+                <p class="muted">Monitor low-stock reorder activity and supplier-linked purchase orders.</p>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/export/purchase-orders">Export Purchase Orders</a>
+                <a href="/logout" class="secondary-link">Logout</a>
+            </div>
+        </div>
 
-    <a href="/">Back to Home</a> |
-    <a href="/export/purchase-orders">Export Purchase Orders (CSV)</a>
+        {% if orders %}
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Book ID</th>
+                <th>Title</th>
+                <th>Quantity Ordered</th>
+                <th>Supplier</th>
+                <th>Order Date</th>
+            </tr>
 
-    <br><br>
-
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>Order ID</th>
-            <th>Book ID</th>
-            <th>Title</th>
-            <th>Quantity Ordered</th>
-            <th>Supplier</th>
-            <th>Order Date</th>
-        </tr>
-
-        {% for order in orders %}
-        <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.book_id }}</td>
-            <td>{{ order.title }}</td>
-            <td>{{ order.quantity_ordered }}</td>
-            <td>
-                {% if order.supplier_name %}
-                    {{ order.supplier_name }}
-                {% else %}
-                    Unassigned
-                {% endif %}
-            </td>
-            <td>{{ order.order_date }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    {% if not orders %}
-    <p>No purchase orders have been created yet.</p>
-    {% endif %}
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.book_id }}</td>
+                <td>{{ order.title }}</td>
+                <td>{{ order.quantity_ordered }}</td>
+                <td>
+                    {% if order.supplier_name %}
+                        {{ order.supplier_name }}
+                    {% else %}
+                        <span class="badge">Unassigned</span>
+                    {% endif %}
+                </td>
+                <td>{{ order.order_date }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="card">
+            <h3>No Purchase Orders Yet</h3>
+            <p class="muted">Purchase orders will appear when stock drops below the reorder threshold.</p>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>

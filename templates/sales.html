@@ -4,40 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales History</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Sales History</h1>
+    <div class="page-container">
+        <div class="top-bar">
+            <div>
+                <h1>Sales History</h1>
+                <p class="muted">Review completed sales transactions and export sales reports.</p>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/checkout">Customer Checkout</a>
+                <a href="/export/sales">Export Sales Report</a>
+                <a href="/logout" class="secondary-link">Logout</a>
+            </div>
+        </div>
 
-    <a href="/">Back to Home</a> |
-    <a href="/checkout">Go to Checkout</a> |
-    <a href="/export/sales">Export Sales Report (CSV)</a>
+        {% if sales %}
+        <table>
+            <tr>
+                <th>Sale ID</th>
+                <th>Book ID</th>
+                <th>Title</th>
+                <th>Quantity Sold</th>
+                <th>Total Price</th>
+                <th>Sale Date</th>
+            </tr>
 
-    <br><br>
-
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>Sale ID</th>
-            <th>Book ID</th>
-            <th>Title</th>
-            <th>Quantity Sold</th>
-            <th>Total Price</th>
-            <th>Sale Date</th>
-        </tr>
-
-        {% for sale in sales %}
-        <tr>
-            <td>{{ sale.id }}</td>
-            <td>{{ sale.book_id }}</td>
-            <td>{{ sale.title }}</td>
-            <td>{{ sale.quantity_sold }}</td>
-            <td>${{ "%.2f"|format(sale.total_price) }}</td>
-            <td>{{ sale.sale_date }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    {% if not sales %}
-    <p>No sales have been recorded yet.</p>
-    {% endif %}
+            {% for sale in sales %}
+            <tr>
+                <td>{{ sale.id }}</td>
+                <td>{{ sale.book_id }}</td>
+                <td>{{ sale.title }}</td>
+                <td>{{ sale.quantity_sold }}</td>
+                <td>${{ "%.2f"|format(sale.total_price) }}</td>
+                <td>{{ sale.sale_date }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <div class="card">
+            <h3>No Sales Yet</h3>
+            <p class="muted">Sales will appear here after checkout transactions are completed.</p>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>

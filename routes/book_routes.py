@@ -60,7 +60,7 @@ def login():
         if username in USERS and USERS[username] == password:
             session["logged_in"] = True
             session["username"] = username
-            return redirect(url_for("books.dashboard"))
+            return redirect(url_for("books.home_page"))
         else:
             error = "Invalid username or password."
 
@@ -71,6 +71,12 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("books.login"))
+
+
+@books_bp.route("/home")
+@login_required
+def home_page():
+    return render_template("index.html", username=session.get("username"))
 
 
 @books_bp.route("/books")

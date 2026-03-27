@@ -1,29 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <div class="center-box">
-        <h1>New Noble Bookstore</h1>
-        <p class="muted">Please log in to access the system.</p>
+<form method="POST" class="form-section">
 
-        {% if error %}
-            <p class="error-message">{{ error }}</p>
-        {% endif %}
-
-        <form method="POST" class="form-section">
-            <label>Username:</label><br>
-            <input type="text" name="username" required>
-
-            <label>Password:</label><br>
-            <input type="password" name="password" required>
-
-            <button type="submit">Login</button>
-        </form>
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" required>
     </div>
-</body>
-</html>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" required>
+    </div>
+
+    <button type="submit">Login</button>
+
+</form>

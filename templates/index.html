@@ -11,10 +11,15 @@
         <div class="top-bar">
             <div>
                 <h1>The New Noble Bookstore Management System</h1>
-                <p class="muted">Manage inventory, sales, suppliers, purchase orders, reporting, and barcode labels.</p>
+                <p class="muted">
+                    Manage inventory, sales, suppliers, purchase orders, reporting, and barcode labels.
+                </p>
             </div>
+
             <div class="nav-links">
-                <a href="/login">Login</a>
+                {% if session.get("username") %}
+                    <span class="muted">Welcome, {{ session.get("username") }}</span>
+                {% endif %}
                 <a href="/logout" class="secondary-link">Logout</a>
             </div>
         </div>

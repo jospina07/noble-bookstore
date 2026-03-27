@@ -9,8 +9,15 @@ books_bp = Blueprint("books", __name__)
 
 DB_PATH = os.path.join("database", "app.db")
 
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "password123"
+USERS = {
+    "admin": "password123",
+    "JOspina": "Jeff01",
+    "KPeek": "Kadysha01",
+    "CPowers": "Craig01",
+    "ROwens": "Ryan01",
+    "EBarrenos": "Enrique01",
+    "FAlmasri": "Fadi01",
+}
 
 
 def get_connection():
@@ -47,13 +54,13 @@ def login():
     error = ""
 
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form["username"].strip()
+        password = request.form["password"].strip()
 
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+        if username in USERS and USERS[username] == password:
             session["logged_in"] = True
             session["username"] = username
-            return redirect(url_for("books.list_books"))
+            return redirect(url_for("books.dashboard"))
         else:
             error = "Invalid username or password."
 
@@ -89,7 +96,12 @@ def list_books():
 
     connection.close()
 
-    return render_template("inventory.html", books=books, search_query=search_query, username=session.get("username"))
+    return render_template(
+        "inventory.html",
+        books=books,
+        search_query=search_query,
+        username=session.get("username")
+    )
 
 
 @books_bp.route("/books/add", methods=["GET", "POST"])
@@ -112,7 +124,7 @@ def add_book():
 
         return redirect(url_for("books.list_books"))
 
-    return render_template("add_book.html")
+    return render_template("add_book.html", username=session.get("username"))
 
 
 @books_bp.route("/books/edit/<int:book_id>", methods=["GET", "POST"])
@@ -150,7 +162,7 @@ def edit_book(book_id):
     if book is None:
         return "Book not found."
 
-    return render_template("edit_book.html", book=book)
+    return render_template("edit_book.html", book=book, username=session.get("username"))
 
 
 @books_bp.route("/books/delete/<int:book_id>", methods=["POST"])
@@ -205,7 +217,8 @@ def book_label(book_id):
     return render_template(
         "book_label.html",
         book=book,
-        barcode_pattern=barcode_pattern
+        barcode_pattern=barcode_pattern,
+        username=session.get("username")
     )
 
 
@@ -259,7 +272,7 @@ def low_stock():
     ).fetchall()
     connection.close()
 
-    return render_template("low_stock.html", books=books)
+    return render_template("low_stock.html", books=books, username=session.get("username"))
 
 
 @books_bp.route("/checkout", methods=["GET", "POST"])
@@ -328,7 +341,7 @@ def checkout():
     ).fetchall()
     connection.close()
 
-    return render_template("checkout.html", books=books)
+    return render_template("checkout.html", books=books, username=session.get("username"))
 
 
 @books_bp.route("/sales")
@@ -340,7 +353,7 @@ def sales_history():
     ).fetchall()
     connection.close()
 
-    return render_template("sales.html", sales=sales)
+    return render_template("sales.html", sales=sales, username=session.get("username"))
 
 
 @books_bp.route("/export/sales")
@@ -407,7 +420,7 @@ def purchase_orders():
 
     connection.close()
 
-    return render_template("purchase_orders.html", orders=orders)
+    return render_template("purchase_orders.html", orders=orders, username=session.get("username"))
 
 
 @books_bp.route("/export/purchase-orders")
@@ -524,7 +537,8 @@ def dashboard():
         total_books_sold=total_books_sold,
         total_revenue=total_revenue,
         top_book=top_book,
-        chart_data=chart_data
+        chart_data=chart_data,
+        username=session.get("username")
     )
 
 
@@ -537,7 +551,7 @@ def suppliers():
     ).fetchall()
     connection.close()
 
-    return render_template("suppliers.html", suppliers=suppliers_list)
+    return render_template("suppliers.html", suppliers=suppliers_list, username=session.get("username"))
 
 
 @books_bp.route("/suppliers/add", methods=["GET", "POST"])
@@ -559,7 +573,7 @@ def add_supplier():
 
         return redirect(url_for("books.suppliers"))
 
-    return render_template("add_supplier.html")
+    return render_template("add_supplier.html", username=session.get("username"))
 
 
 @books_bp.route("/api/books")

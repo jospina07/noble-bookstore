@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, redirect, url_for, jsonify
 
 main = Blueprint("main", __name__)
 
 @main.route("/")
 def home():
-    return render_template("index.html")
+    return redirect(url_for("books.login"))
 
 @main.route("/api/status")
 def status():

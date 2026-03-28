@@ -13,7 +13,7 @@
             <p class="muted">Logged in as: <span class="badge">{{ username }}</span></p>
         </div>
         <div class="nav-links">
-            <a href="/">Home</a>
+            <a href="{{ url_for('books.home_page') }}">Home</a>
             <a href="/books/add">Add Book</a>
             <a href="/export/inventory">Export Inventory</a>
             <a href="/logout" class="secondary-link">Logout</a>

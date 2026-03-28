@@ -233,3 +233,10 @@ pre.barcode-block {
     border: 1px solid #ccc;
     width: 100%;
 }
+
+body.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

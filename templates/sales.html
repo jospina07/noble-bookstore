@@ -15,52 +15,52 @@
             </div>
             <div class="nav-links">
                 <a href="{{ url_for('books.home_page') }}">Home</a>
-                <a href="/checkout">Customer Checkout</a>
-
-                {% if role in ["all_access", "manager"] %}
-                    <a href="/export/sales">Export Sales Report</a>
-                {% endif %}
-
-                <a href="/logout" class="secondary-link">Logout</a>
+                <a href="{{ url_for('books.checkout') }}">Customer Checkout</a>
+                <a href="{{ url_for('books.export_sales') }}">Export Sales Report</a>
+                <a href="{{ url_for('books.logout') }}" class="secondary-link">Logout</a>
             </div>
         </div>
 
-        {% if sales %}
-        <table>
-            <tr>
-                <th>Sale ID</th>
-                <th>Book ID</th>
-                <th>Title</th>
-                <th>State</th>
-                <th>Quantity Sold</th>
-                <th>Subtotal</th>
-                <th>Tax Rate</th>
-                <th>Tax Amount</th>
-                <th>Final Total</th>
-                <th>Sale Date</th>
-            </tr>
-
-            {% for sale in sales %}
-            <tr>
-                <td>{{ sale.id }}</td>
-                <td>{{ sale.book_id }}</td>
-                <td>{{ sale.title }}</td>
-                <td>{{ sale.state if sale.state else "N/A" }}</td>
-                <td>{{ sale.quantity_sold }}</td>
-                <td>${{ "%.2f"|format(sale.subtotal if sale.subtotal else 0) }}</td>
-                <td>{{ "%.2f"|format((sale.tax_rate if sale.tax_rate else 0) * 100) }}%</td>
-                <td>${{ "%.2f"|format(sale.tax_amount if sale.tax_amount else 0) }}</td>
-                <td>${{ "%.2f"|format(sale.final_total if sale.final_total else sale.total_price) }}</td>
-                <td>{{ sale.sale_date }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-        {% else %}
-        <div class="card">
-            <h3>No Sales Yet</h3>
-            <p class="muted">Sales will appear here after checkout transactions are completed.</p>
+        <div class="table-section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sale ID</th>
+                        <th>Book ID</th>
+                        <th>Title</th>
+                        <th>State</th>
+                        <th>Quantity Sold</th>
+                        <th>Subtotal</th>
+                        <th>Tax Rate</th>
+                        <th>Tax Amount</th>
+                        <th>Final Total</th>
+                        <th>Sale Date</th>
+                        <th>Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td>{{ sale.id }}</td>
+                        <td>{{ sale.book_id }}</td>
+                        <td>{{ sale.title }}</td>
+                        <td>{{ sale.state }}</td>
+                        <td>{{ sale.quantity_sold }}</td>
+                        <td>${{ "%.2f"|format(sale.subtotal if sale.subtotal is not none else 0) }}</td>
+                        <td>{{ "%.2f"|format((sale.tax_rate if sale.tax_rate is not none else 0) * 100) }}%</td>
+                        <td>${{ "%.2f"|format(sale.tax_amount if sale.tax_amount is not none else 0) }}</td>
+                        <td>${{ "%.2f"|format(sale.final_total if sale.final_total is not none else sale.total_price) }}</td>
+                        <td>{{ sale.sale_date }}</td>
+                        <td>
+                            <a href="{{ url_for('books.print_receipt', sale_id=sale.id) }}" target="_blank">
+                                Print Receipt
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        {% endif %}
     </div>
 </body>
 </html>

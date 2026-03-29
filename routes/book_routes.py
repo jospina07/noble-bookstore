@@ -478,6 +478,44 @@ def sales_history():
     )
 
 
+@books_bp.route("/sales/receipt/<int:sale_id>")
+@login_required
+def print_receipt(sale_id):
+    connection = get_connection()
+
+    sale = connection.execute(
+        """
+        SELECT
+            id,
+            book_id,
+            title,
+            quantity_sold,
+            total_price,
+            state,
+            subtotal,
+            tax_rate,
+            tax_amount,
+            final_total,
+            sale_date
+        FROM sales
+        WHERE id = ?
+        """,
+        (sale_id,)
+    ).fetchone()
+
+    connection.close()
+
+    if sale is None:
+        return "Sale not found."
+
+    return render_template(
+        "receipt.html",
+        sale=sale,
+        username=session.get("username"),
+        role=session.get("role")
+    )
+
+
 @books_bp.route("/export/sales")
 @role_required(["all_access", "manager"])
 def export_sales():

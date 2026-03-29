@@ -375,6 +375,7 @@ def checkout():
     if request.method == "POST":
         book_id = request.form["book_id"]
         quantity_sold = int(request.form["quantity_sold"])
+        state = request.form["state"]
 
         book = connection.execute(
             "SELECT * FROM books WHERE id = ?",
@@ -394,7 +395,11 @@ def checkout():
             return "Not enough stock available."
 
         new_quantity = book["quantity"] - quantity_sold
-        total_price = float(book["price"]) * quantity_sold
+
+        subtotal = float(book["price"]) * quantity_sold
+        tax_rate = STATE_TAX_RATES.get(state, 0)
+        tax_amount = round(subtotal * tax_rate, 2)
+        final_total = round(subtotal + tax_amount, 2)
 
         if new_quantity < 5:
             reorder_amount = 10
@@ -419,8 +424,22 @@ def checkout():
         )
 
         connection.execute(
-            "INSERT INTO sales (book_id, title, quantity_sold, total_price) VALUES (?, ?, ?, ?)",
-            (book["id"], book["title"], quantity_sold, total_price)
+            """
+            INSERT INTO sales (
+                book_id, title, quantity_sold, total_price, state, subtotal, tax_rate, tax_amount, final_total
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                book["id"],
+                book["title"],
+                quantity_sold,
+                final_total,
+                state,
+                subtotal,
+                tax_rate,
+                tax_amount,
+                final_total
+            )
         )
 
         connection.commit()
@@ -475,7 +494,11 @@ def export_sales():
         "Book ID",
         "Title",
         "Quantity Sold",
-        "Total Price",
+        "State",
+        "Subtotal",
+        "Tax Rate",
+        "Tax Amount",
+        "Final Total",
         "Sale Date"
     ])
 
@@ -485,7 +508,11 @@ def export_sales():
             sale["book_id"],
             sale["title"],
             sale["quantity_sold"],
-            sale["total_price"],
+            sale["state"] if "state" in sale.keys() else "",
+            sale["subtotal"] if "subtotal" in sale.keys() else "",
+            sale["tax_rate"] if "tax_rate" in sale.keys() else "",
+            sale["tax_amount"] if "tax_amount" in sale.keys() else "",
+            sale["final_total"] if "final_total" in sale.keys() else sale["total_price"],
             sale["sale_date"]
         ])
 

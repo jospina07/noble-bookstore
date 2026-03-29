@@ -22,22 +22,34 @@
 
         <div class="form-section">
             <form method="POST">
-                <label>ISBN:</label><br>
-                <input type="text" name="isbn" required>
 
-                <label>Title:</label><br>
-                <input type="text" name="title" required>
+                <div class="form-group">
+                    <label>ISBN</label>
+                    <input type="text" name="isbn" required>
+                </div>
 
-                <label>Author:</label><br>
-                <input type="text" name="author" required>
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="title" required>
+                </div>
 
-                <label>Price:</label><br>
-                <input type="number" step="0.01" name="price" required>
+                <div class="form-group">
+                    <label>Author</label>
+                    <input type="text" name="author" required>
+                </div>
 
-                <label>Quantity:</label><br>
-                <input type="number" name="quantity" required>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="number" step="0.01" name="price" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" name="quantity" required>
+                </div>
 
                 <button type="submit">Add Book</button>
+
             </form>
         </div>
     </div>

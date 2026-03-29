@@ -22,17 +22,21 @@
 
         <div class="form-section">
             <form method="POST">
-                <label>Select Book:</label><br>
-                <select name="book_id" required>
-                    {% for book in books %}
-                    <option value="{{ book.id }}">
-                        {{ book.title }} by {{ book.author }} (Stock: {{ book.quantity }}, Price: ${{ "%.2f"|format(book.price) }})
-                    </option>
-                    {% endfor %}
-                </select>
+                <div class="form-group">
+                    <label>Select Book</label>
+                    <select name="book_id" required>
+                        {% for book in books %}
+                        <option value="{{ book.id }}">
+                            {{ book.title }} by {{ book.author }} (Stock: {{ book.quantity }}, Price: ${{ "%.2f"|format(book.price) }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                <label>Quantity to Purchase:</label><br>
-                <input type="number" name="quantity_sold" min="1" required>
+                <div class="form-group">
+                    <label>Quantity to Purchase</label>
+                    <input type="number" name="quantity_sold" min="1" required>
+                </div>
 
                 <button type="submit">Complete Purchase</button>
             </form>

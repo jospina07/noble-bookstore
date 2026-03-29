@@ -18,47 +18,79 @@
 
             <div class="nav-links">
                 {% if session.get("username") %}
-                    <span class="muted">Welcome, {{ session.get("username") }}</span>
+                    <span class="muted">
+                        Welcome, {{ session.get("username") }}
+                    </span>
+                    <span class="badge">{{ session.get("role")|replace("_", " ")|title }}</span>
                 {% endif %}
                 <a href="/logout" class="secondary-link">Logout</a>
             </div>
         </div>
 
+        {% if session.get("role") == "employee" %}
+            <div class="card">
+                <h3>Employee Access</h3>
+                <p class="muted">You can process sales and review inventory needed for daily bookstore operations.</p>
+            </div>
+        {% elif session.get("role") == "manager" %}
+            <div class="card">
+                <h3>Manager Access</h3>
+                <p class="muted">You can oversee inventory, suppliers, purchase orders, reports, and analytics.</p>
+            </div>
+        {% elif session.get("role") == "all_access" %}
+            <div class="card">
+                <h3>All Access</h3>
+                <p class="muted">You have full system access including development and integration tools.</p>
+            </div>
+        {% endif %}
+
         <div class="card-grid">
             <div class="card">
                 <h3>Inventory</h3>
-                <p class="muted">Manage books, edit records, update stock, print labels, and export inventory.</p>
+                <p class="muted">
+                    {% if session.get("role") == "employee" %}
+                        View current inventory and search books available in the system.
+                    {% else %}
+                        Manage books, update stock, edit records, print labels, and export inventory.
+                    {% endif %}
+                </p>
                 <a class="action-link" href="/books">View Inventory</a>
-                <a class="action-link" href="/books/add">Add Book</a>
+
+                {% if session.get("role") in ["all_access", "manager"] %}
+                    <a class="action-link" href="/books/add">Add Book</a>
+                {% endif %}
             </div>
 
             <div class="card">
                 <h3>Sales</h3>
-                <p class="muted">Process checkout, review sales history, and export sales data.</p>
+                <p class="muted">Process checkout transactions and review sales history.</p>
                 <a class="action-link" href="/checkout">Customer Checkout</a>
                 <a class="action-link" href="/sales">Sales History</a>
             </div>
 
+            {% if session.get("role") in ["all_access", "manager"] %}
             <div class="card">
                 <h3>Purchase Orders</h3>
-                <p class="muted">Monitor restocking activity and supplier-connected purchase orders.</p>
+                <p class="muted">Monitor restocking activity and review generated purchase orders.</p>
                 <a class="action-link" href="/purchase-orders">Purchase Orders</a>
                 <a class="action-link" href="/low-stock">Low Stock Alert</a>
             </div>
 
             <div class="card">
                 <h3>Suppliers</h3>
-                <p class="muted">Add and manage supplier contact information.</p>
+                <p class="muted">Add and manage supplier records and contact details.</p>
                 <a class="action-link" href="/suppliers">Suppliers</a>
                 <a class="action-link" href="/suppliers/add">Add Supplier</a>
             </div>
 
             <div class="card">
                 <h3>Analytics</h3>
-                <p class="muted">Review dashboard metrics and visual sales charts.</p>
+                <p class="muted">Review sales performance, key metrics, and chart visualizations.</p>
                 <a class="action-link" href="/dashboard">Sales Dashboard</a>
             </div>
+            {% endif %}
 
+            {% if session.get("role") == "all_access" %}
             <div class="card">
                 <h3>Developer API</h3>
                 <p class="muted">
@@ -68,6 +100,7 @@
                 <a class="action-link" href="/api/books">Books API</a>
                 <a class="action-link" href="/api/sales">Sales API</a>
             </div>
+            {% endif %}
         </div>
     </div>
 </body>

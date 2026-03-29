@@ -10,13 +10,16 @@ books_bp = Blueprint("books", __name__)
 DB_PATH = os.path.join("database", "app.db")
 
 USERS = {
-    "admin": "password123",
-    "JOspina": "Jeff01",
-    "KPeek": "Kadysha01",
-    "CPowers": "Craig01",
-    "ROwens": "Ryan01",
-    "EBarrenos": "Enrique01",
-    "FAlmasri": "Fadi01",
+    "admin": {"password": "password123", "role": "all_access"},
+    "JOspina": {"password": "Jeff01", "role": "all_access"},
+    "KPeek": {"password": "Kadysha01", "role": "all_access"},
+    "CPowers": {"password": "Craig01", "role": "all_access"},
+    "ROwens": {"password": "Ryan01", "role": "all_access"},
+    "EBarrenos": {"password": "Enrique01", "role": "all_access"},
+    "FAlmasri": {"password": "Fadi01", "role": "all_access"},
+
+    "manager1": {"password": "Manager01", "role": "manager"},
+    "employee1": {"password": "Employee01", "role": "employee"},
 }
 
 
@@ -33,6 +36,22 @@ def login_required(route_function):
             return redirect(url_for("books.login"))
         return route_function(*args, **kwargs)
     return wrapped_route
+
+
+def role_required(allowed_roles):
+    def decorator(route_function):
+        @wraps(route_function)
+        def wrapped_route(*args, **kwargs):
+            if not session.get("logged_in"):
+                return redirect(url_for("books.login"))
+
+            user_role = session.get("role")
+            if user_role not in allowed_roles:
+                return "Access denied.", 403
+
+            return route_function(*args, **kwargs)
+        return wrapped_route
+    return decorator
 
 
 def generate_barcode_pattern(isbn):
@@ -57,9 +76,12 @@ def login():
         username = request.form["username"].strip()
         password = request.form["password"].strip()
 
-        if username in USERS and USERS[username] == password:
+        user = USERS.get(username)
+
+        if user and user["password"] == password:
             session["logged_in"] = True
             session["username"] = username
+            session["role"] = user["role"]
             return redirect(url_for("books.home_page"))
         else:
             error = "Invalid username or password."
@@ -76,7 +98,11 @@ def logout():
 @books_bp.route("/home")
 @login_required
 def home_page():
-    return render_template("index.html", username=session.get("username"))
+    return render_template(
+        "index.html",
+        username=session.get("username"),
+        role=session.get("role")
+    )
 
 
 @books_bp.route("/books")
@@ -106,12 +132,13 @@ def list_books():
         "inventory.html",
         books=books,
         search_query=search_query,
-        username=session.get("username")
+        username=session.get("username"),
+        role=session.get("role")
     )
 
 
 @books_bp.route("/books/add", methods=["GET", "POST"])
-@login_required
+@role_required(["all_access", "manager"])
 def add_book():
     if request.method == "POST":
         isbn = request.form["isbn"]
@@ -130,11 +157,11 @@ def add_book():
 
         return redirect(url_for("books.list_books"))
 
-    return render_template("add_book.html", username=session.get("username"))
+    return render_template("add_book.html", username=session.get("username"), role=session.get("role"))
 
 
 @books_bp.route("/books/edit/<int:book_id>", methods=["GET", "POST"])
-@login_required
+@role_required(["all_access", "manager"])
 def edit_book(book_id):
     connection = get_connection()
 
@@ -168,11 +195,11 @@ def edit_book(book_id):
     if book is None:
         return "Book not found."
 
-    return render_template("edit_book.html", book=book, username=session.get("username"))
+    return render_template("edit_book.html", book=book, username=session.get("username"), role=session.get("role"))
 
 
 @books_bp.route("/books/delete/<int:book_id>", methods=["POST"])
-@login_required
+@role_required(["all_access", "manager"])
 def delete_book(book_id):
     connection = get_connection()
 
@@ -188,7 +215,7 @@ def delete_book(book_id):
 
 
 @books_bp.route("/books/update/<int:book_id>", methods=["POST"])
-@login_required
+@role_required(["all_access", "manager"])
 def update_book_quantity(book_id):
     new_quantity = request.form["quantity"]
 
@@ -204,7 +231,7 @@ def update_book_quantity(book_id):
 
 
 @books_bp.route("/books/label/<int:book_id>")
-@login_required
+@role_required(["all_access", "manager"])
 def book_label(book_id):
     connection = get_connection()
 
@@ -224,12 +251,13 @@ def book_label(book_id):
         "book_label.html",
         book=book,
         barcode_pattern=barcode_pattern,
-        username=session.get("username")
+        username=session.get("username"),
+        role=session.get("role")
     )
 
 
 @books_bp.route("/export/inventory")
-@login_required
+@role_required(["all_access", "manager"])
 def export_inventory():
     connection = get_connection()
     books = connection.execute(
@@ -270,7 +298,7 @@ def export_inventory():
 
 
 @books_bp.route("/low-stock")
-@login_required
+@role_required(["all_access", "manager"])
 def low_stock():
     connection = get_connection()
     books = connection.execute(
@@ -278,7 +306,12 @@ def low_stock():
     ).fetchall()
     connection.close()
 
-    return render_template("low_stock.html", books=books, username=session.get("username"))
+    return render_template(
+        "low_stock.html",
+        books=books,
+        username=session.get("username"),
+        role=session.get("role")
+    )
 
 
 @books_bp.route("/checkout", methods=["GET", "POST"])
@@ -347,7 +380,12 @@ def checkout():
     ).fetchall()
     connection.close()
 
-    return render_template("checkout.html", books=books, username=session.get("username"))
+    return render_template(
+        "checkout.html",
+        books=books,
+        username=session.get("username"),
+        role=session.get("role")
+    )
 
 
 @books_bp.route("/sales")
@@ -359,11 +397,16 @@ def sales_history():
     ).fetchall()
     connection.close()
 
-    return render_template("sales.html", sales=sales, username=session.get("username"))
+    return render_template(
+        "sales.html",
+        sales=sales,
+        username=session.get("username"),
+        role=session.get("role")
+    )
 
 
 @books_bp.route("/export/sales")
-@login_required
+@role_required(["all_access", "manager"])
 def export_sales():
     connection = get_connection()
     sales = connection.execute(
@@ -404,7 +447,7 @@ def export_sales():
 
 
 @books_bp.route("/purchase-orders")
-@login_required
+@role_required(["all_access", "manager"])
 def purchase_orders():
     connection = get_connection()
 
@@ -426,11 +469,16 @@ def purchase_orders():
 
     connection.close()
 
-    return render_template("purchase_orders.html", orders=orders, username=session.get("username"))
+    return render_template(
+        "purchase_orders.html",
+        orders=orders,
+        username=session.get("username"),
+        role=session.get("role")
+    )
 
 
 @books_bp.route("/export/purchase-orders")
-@login_required
+@role_required(["all_access", "manager"])
 def export_purchase_orders():
     connection = get_connection()
 
@@ -484,7 +532,7 @@ def export_purchase_orders():
 
 
 @books_bp.route("/dashboard")
-@login_required
+@role_required(["all_access", "manager"])
 def dashboard():
     connection = get_connection()
 
@@ -544,12 +592,13 @@ def dashboard():
         total_revenue=total_revenue,
         top_book=top_book,
         chart_data=chart_data,
-        username=session.get("username")
+        username=session.get("username"),
+        role=session.get("role")
     )
 
 
 @books_bp.route("/suppliers")
-@login_required
+@role_required(["all_access", "manager"])
 def suppliers():
     connection = get_connection()
     suppliers_list = connection.execute(
@@ -557,11 +606,16 @@ def suppliers():
     ).fetchall()
     connection.close()
 
-    return render_template("suppliers.html", suppliers=suppliers_list, username=session.get("username"))
+    return render_template(
+        "suppliers.html",
+        suppliers=suppliers_list,
+        username=session.get("username"),
+        role=session.get("role")
+    )
 
 
 @books_bp.route("/suppliers/add", methods=["GET", "POST"])
-@login_required
+@role_required(["all_access", "manager"])
 def add_supplier():
     if request.method == "POST":
         name = request.form["name"]
@@ -579,11 +633,15 @@ def add_supplier():
 
         return redirect(url_for("books.suppliers"))
 
-    return render_template("add_supplier.html", username=session.get("username"))
+    return render_template(
+        "add_supplier.html",
+        username=session.get("username"),
+        role=session.get("role")
+    )
 
 
 @books_bp.route("/api/books")
-@login_required
+@role_required(["all_access"])
 def api_books():
     connection = get_connection()
     books = connection.execute("SELECT * FROM books").fetchall()
@@ -593,7 +651,7 @@ def api_books():
 
 
 @books_bp.route("/api/sales")
-@login_required
+@role_required(["all_access"])
 def api_sales():
     connection = get_connection()
     sales = connection.execute("SELECT * FROM sales").fetchall()

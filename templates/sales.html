@@ -16,7 +16,11 @@
             <div class="nav-links">
                 <a href="{{ url_for('books.home_page') }}">Home</a>
                 <a href="/checkout">Customer Checkout</a>
-                <a href="/export/sales">Export Sales Report</a>
+
+                {% if role in ["all_access", "manager"] %}
+                    <a href="/export/sales">Export Sales Report</a>
+                {% endif %}
+
                 <a href="/logout" class="secondary-link">Logout</a>
             </div>
         </div>

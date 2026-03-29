@@ -31,8 +31,12 @@
                 <th>Sale ID</th>
                 <th>Book ID</th>
                 <th>Title</th>
+                <th>State</th>
                 <th>Quantity Sold</th>
-                <th>Total Price</th>
+                <th>Subtotal</th>
+                <th>Tax Rate</th>
+                <th>Tax Amount</th>
+                <th>Final Total</th>
                 <th>Sale Date</th>
             </tr>
 
@@ -41,8 +45,12 @@
                 <td>{{ sale.id }}</td>
                 <td>{{ sale.book_id }}</td>
                 <td>{{ sale.title }}</td>
+                <td>{{ sale.state if sale.state else "N/A" }}</td>
                 <td>{{ sale.quantity_sold }}</td>
-                <td>${{ "%.2f"|format(sale.total_price) }}</td>
+                <td>${{ "%.2f"|format(sale.subtotal if sale.subtotal else 0) }}</td>
+                <td>{{ "%.2f"|format((sale.tax_rate if sale.tax_rate else 0) * 100) }}%</td>
+                <td>${{ "%.2f"|format(sale.tax_amount if sale.tax_amount else 0) }}</td>
+                <td>${{ "%.2f"|format(sale.final_total if sale.final_total else sale.total_price) }}</td>
                 <td>{{ sale.sale_date }}</td>
             </tr>
             {% endfor %}

@@ -54,10 +54,29 @@ CREATE TABLE IF NOT EXISTS suppliers (
 
 # SAFELY ADD supplier_id COLUMN TO EXISTING purchase_orders TABLE IF IT DOES NOT EXIST
 cursor.execute("PRAGMA table_info(purchase_orders)")
-columns = [column[1] for column in cursor.fetchall()]
+purchase_order_columns = [column[1] for column in cursor.fetchall()]
 
-if "supplier_id" not in columns:
+if "supplier_id" not in purchase_order_columns:
     cursor.execute("ALTER TABLE purchase_orders ADD COLUMN supplier_id INTEGER")
+
+# SAFELY ADD NEW SALES TAX COLUMNS TO EXISTING sales TABLE IF THEY DO NOT EXIST
+cursor.execute("PRAGMA table_info(sales)")
+sales_columns = [column[1] for column in cursor.fetchall()]
+
+if "state" not in sales_columns:
+    cursor.execute("ALTER TABLE sales ADD COLUMN state TEXT")
+
+if "subtotal" not in sales_columns:
+    cursor.execute("ALTER TABLE sales ADD COLUMN subtotal REAL DEFAULT 0")
+
+if "tax_rate" not in sales_columns:
+    cursor.execute("ALTER TABLE sales ADD COLUMN tax_rate REAL DEFAULT 0")
+
+if "tax_amount" not in sales_columns:
+    cursor.execute("ALTER TABLE sales ADD COLUMN tax_amount REAL DEFAULT 0")
+
+if "final_total" not in sales_columns:
+    cursor.execute("ALTER TABLE sales ADD COLUMN final_total REAL DEFAULT 0")
 
 connection.commit()
 connection.close()

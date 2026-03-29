@@ -23,10 +23,14 @@
         <div class="form-section">
             <form method="POST">
                 <div class="form-group">
-                    <label>Select Book</label>
-                    <select name="book_id" required>
+                    <label for="book_id">Select Book</label>
+                    <select name="book_id" id="book_id" required>
+                        <option value="">Select Book</option>
                         {% for book in books %}
-                        <option value="{{ book.id }}">
+                        <option
+                            value="{{ book.id }}"
+                            data-price="{{ book.price }}"
+                        >
                             {{ book.title }} by {{ book.author }} (Stock: {{ book.quantity }}, Price: ${{ "%.2f"|format(book.price) }})
                         </option>
                         {% endfor %}
@@ -34,70 +38,68 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Customer State</label>
-                    <select name="state" required>
+                    <label for="state">Customer State</label>
+                    <select name="state" id="state" required>
                         <option value="">Select State</option>
-                        <option value="AL">Alabama</option>
-                        <option value="AK">Alaska</option>
-                        <option value="AZ">Arizona</option>
-                        <option value="AR">Arkansas</option>
-                        <option value="CA">California</option>
-                        <option value="CO">Colorado</option>
-                        <option value="CT">Connecticut</option>
-                        <option value="DE">Delaware</option>
-                        <option value="FL">Florida</option>
-                        <option value="GA">Georgia</option>
-                        <option value="HI">Hawaii</option>
-                        <option value="ID">Idaho</option>
-                        <option value="IL">Illinois</option>
-                        <option value="IN">Indiana</option>
-                        <option value="IA">Iowa</option>
-                        <option value="KS">Kansas</option>
-                        <option value="KY">Kentucky</option>
-                        <option value="LA">Louisiana</option>
-                        <option value="ME">Maine</option>
-                        <option value="MD">Maryland</option>
-                        <option value="MA">Massachusetts</option>
-                        <option value="MI">Michigan</option>
-                        <option value="MN">Minnesota</option>
-                        <option value="MS">Mississippi</option>
-                        <option value="MO">Missouri</option>
-                        <option value="MT">Montana</option>
-                        <option value="NE">Nebraska</option>
-                        <option value="NV">Nevada</option>
-                        <option value="NH">New Hampshire</option>
-                        <option value="NJ">New Jersey</option>
-                        <option value="NM">New Mexico</option>
-                        <option value="NY">New York</option>
-                        <option value="NC">North Carolina</option>
-                        <option value="ND">North Dakota</option>
-                        <option value="OH">Ohio</option>
-                        <option value="OK">Oklahoma</option>
-                        <option value="OR">Oregon</option>
-                        <option value="PA">Pennsylvania</option>
-                        <option value="RI">Rhode Island</option>
-                        <option value="SC">South Carolina</option>
-                        <option value="SD">South Dakota</option>
-                        <option value="TN">Tennessee</option>
-                        <option value="TX">Texas</option>
-                        <option value="UT">Utah</option>
-                        <option value="VT">Vermont</option>
-                        <option value="VA">Virginia</option>
-                        <option value="WA">Washington</option>
-                        <option value="WV">West Virginia</option>
-                        <option value="WI">Wisconsin</option>
-                        <option value="WY">Wyoming</option>
+                        {% for state_code, tax_rate in state_tax_rates.items() %}
+                        <option value="{{ state_code }}" data-tax-rate="{{ tax_rate }}">
+                            {{ state_code }}
+                        </option>
+                        {% endfor %}
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Quantity to Purchase</label>
-                    <input type="number" name="quantity_sold" min="1" required>
+                    <label for="quantity_sold">Quantity to Purchase</label>
+                    <input type="number" name="quantity_sold" id="quantity_sold" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="subtotal_preview">Subtotal</label>
+                    <input type="text" id="subtotal_preview" value="$0.00" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="total_preview">Total After Tax</label>
+                    <input type="text" id="total_preview" value="$0.00" readonly>
                 </div>
 
                 <button type="submit">Complete Purchase</button>
             </form>
         </div>
     </div>
+
+    <script>
+        const bookSelect = document.getElementById("book_id");
+        const stateSelect = document.getElementById("state");
+        const quantityInput = document.getElementById("quantity_sold");
+        const subtotalPreview = document.getElementById("subtotal_preview");
+        const totalPreview = document.getElementById("total_preview");
+
+        function updateTotals() {
+            const selectedBook = bookSelect.options[bookSelect.selectedIndex];
+            const selectedState = stateSelect.options[stateSelect.selectedIndex];
+
+            const price = parseFloat(selectedBook?.dataset.price || 0);
+            const taxRate = parseFloat(selectedState?.dataset.taxRate || 0);
+            const quantity = parseInt(quantityInput.value) || 0;
+
+            if (!selectedBook.value || !selectedState.value || quantity <= 0) {
+                subtotalPreview.value = "$0.00";
+                totalPreview.value = "$0.00";
+                return;
+            }
+
+            const subtotal = price * quantity;
+            const total = subtotal + (subtotal * taxRate);
+
+            subtotalPreview.value = `$${subtotal.toFixed(2)}`;
+            totalPreview.value = `$${total.toFixed(2)}`;
+        }
+
+        bookSelect.addEventListener("change", updateTotals);
+        stateSelect.addEventListener("change", updateTotals);
+        quantityInput.addEventListener("input", updateTotals);
+    </script>
 </body>
 </html>

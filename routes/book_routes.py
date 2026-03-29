@@ -455,6 +455,7 @@ def checkout():
     return render_template(
         "checkout.html",
         books=books,
+        state_tax_rates=STATE_TAX_RATES,
         username=session.get("username"),
         role=session.get("role")
     )
